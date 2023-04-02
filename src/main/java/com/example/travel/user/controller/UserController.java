@@ -23,6 +23,15 @@ public class UserController {
     }
 
     /**
+     * 小程序用户登录
+     * @return
+     */
+    @GetMapping("wxLogin")
+    public String wxLogin(@RequestParam(value = "code") String code) {
+        return userService.wxLogin(code,null,null);
+    }
+
+    /**
      * 微信小程序code验证登录
      */
 
