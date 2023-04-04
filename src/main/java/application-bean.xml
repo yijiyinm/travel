@@ -1,0 +1,40 @@
+<!--<?xml version="1.0" encoding="UTF-8" ?>-->
+<!--<beans xmlns="http://www.springframework.org/schema/beans"-->
+<!--       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--       xmlns:context="http://www.springframework.org/schema/context"-->
+<!--       xmlns:aop="http://www.springframework.org/schema/aop"-->
+<!--       xsi:schemaLocation="-->
+<!--       http://www.springframework.org/schema/beans-->
+<!--       http://www.springframework.org/schema/beans/spring-beans.xsd-->
+<!--       http://www.springframework.org/schema/context-->
+<!--       http://www.springframework.org/schema/context/spring-cont ext.xsd-->
+<!--       http://www.springframework.org/schema/aop-->
+<!--       http://www.springframework.org/schema/aop/spring-aop.xs">-->
+
+
+<!--    &lt;!&ndash; dao实例加入容器 &ndash;&gt;-->
+<!--    &lt;!&ndash; 实例化切面类 &ndash;&gt;-->
+<!--    <bean id="transactionAop" class="com.example.travel.user.interceptor.AuthorityAnnotationInterceptor"></bean>-->
+
+<!--    &lt;!&ndash; aop相关配置 &ndash;&gt;-->
+<!--    <aop:config>-->
+<!--        &lt;!&ndash; 切入点表达式定义 &ndash;&gt;-->
+<!--        <aop:pointcut expression="execution(* test.spring_apo_anno.*DAO.*(..))" id="transactionPointcut"/>-->
+<!--        &lt;!&ndash; 切面配置 &ndash;&gt;-->
+<!--        <aop:aspect ref="transactionAop">-->
+<!--            &lt;!&ndash; 环绕通知 &ndash;&gt;-->
+<!--&lt;!&ndash;            <aop:around method="arroud" pointcut-ref="transactionPointcut"/>&ndash;&gt;-->
+<!--            &lt;!&ndash; 前置通知 在目标方法之前执行&ndash;&gt;-->
+<!--            <aop:after method="preHandle" pointcut-ref="transactionPointcut"/>-->
+<!--&lt;!&ndash;            &lt;!&ndash; 后置通知 &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;            <aop:after-returning method="commit" pointcut-ref="transactionPointcut"/>&ndash;&gt;-->
+<!--&lt;!&ndash;            &lt;!&ndash; 返回后通知 &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;            <aop:after-returning method="afterReturing" pointcut-ref="transactionPointcut"/>&ndash;&gt;-->
+<!--&lt;!&ndash;            &lt;!&ndash; 异常通知 &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;            <aop:after-throwing method="afterThrowing" pointcut-ref="transactionPointcut"/>&ndash;&gt;-->
+<!--        </aop:aspect>-->
+
+<!--    </aop:config>-->
+
+
+<!--</beans>-->

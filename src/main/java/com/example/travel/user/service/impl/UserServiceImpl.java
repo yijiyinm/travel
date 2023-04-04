@@ -7,10 +7,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.travel.user.dao.UserMapper;
 import com.example.travel.user.entity.UserDO;
 import com.example.travel.user.service.UserService;
-import com.example.travel.util.GenerateTokenCodeUtil;
+import com.example.travel.util.GenerateCodeUtil;
 import com.example.travel.util.HttpClientUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -22,12 +21,9 @@ import java.util.HashMap;
 @Slf4j
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements UserService {
-    @Value("${wx.appid}")
-    private static String appId;
-    @Value("${wx.appsecret}")
-    private static String appSecret;
-    @Value("${wx.loginurl}")
-    private static String loginUrl;
+    private static String appId = "wx2e0c5d458b1896b5";
+    private static String appSecret ="6ead95f2fcd40471225aaa9083528914";
+    private static String loginUrl = "https://api.weixin.qq.com/sns/jscode2session";
 
     @Override
     public UserDO getUserInfo(String name) {
@@ -36,13 +32,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     @Override
     public String wxLogin(String code,String name,String phone) {
+        log.info("登录信息code:{}",code);
         HashMap map = new HashMap(4);
         map.put("appid",appId);
         map.put("secret",appSecret);
         map.put("js_code",code);
         map.put("grant_type","authorization_code");
         String loginReturnString = HttpClientUtil.doGet(loginUrl,map);
+        log.info("返回数据：{}",loginReturnString);
         JSONObject jsonObject = JSON.parseObject(loginReturnString);
+        log.info("返回数据：{}",jsonObject);
 
         // 小程序用户数据
         String openId = jsonObject.getString("openid");
@@ -60,7 +59,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             user.insert();
         }
         // 生成以sessionKey和token为对应的token编码
-        String token = GenerateTokenCodeUtil.createTokenCode();
+        String token = GenerateCodeUtil.createCode(20);
+        log.info("生成的token:{}",token);
         // todo 将生成的token编码和openId,sessionKey关联存储 session,全局Map或redis
 
         // 返回给前端

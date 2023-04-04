@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.example.travel.user.dao.UserMapper">
+<mapper namespace="com.example.travel.product.dao.ProductMapper">
     <!-- all_columns应该是全部列 -->
     <sql id="all_columns">
         `id`,
-        `name`,
-        `phone`,
-        `open_id`,
+        `product_code`,
+        `product_name`,
+        `description`,
+        `status`,
         `update_date`,
         `create_date`
     </sql>
     <!-- insert_columns应该是全部没有默认值的列 -->
     <sql id="insert_columns">
         `id`,
-        `name`,
-        `phone`,
-        `open_id`,
+        `product_code`,
+        `product_name`,
+        `description`,
+        `status`,
         `update_date`,
         `create_date`
     </sql>
     <!-- 基本的DAO操作结束 -->
 
-<!--    <sql id="area_select">-->
-<!--        select-->
-<!--        <include refid="all_columns"/>-->
-<!--        from part_price_${area} ${ew.customSqlSegment}-->
-<!--    </sql>-->
+    <!--    <sql id="area_select">-->
+    <!--        select-->
+    <!--        <include refid="all_columns"/>-->
+    <!--        from part_price_${area} ${ew.customSqlSegment}-->
+    <!--    </sql>-->
 </mapper>

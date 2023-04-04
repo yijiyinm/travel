@@ -2,6 +2,7 @@ package com.example.travel.user.controller;
 
 import com.example.travel.user.entity.UserDO;
 import com.example.travel.user.service.UserService;
+import com.example.travel.util.BaseRespResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,9 +27,9 @@ public class UserController {
      * 小程序用户登录
      * @return
      */
-    @GetMapping("wxLogin")
-    public String wxLogin(@RequestParam(value = "code") String code) {
-        return userService.wxLogin(code,null,null);
+    @PostMapping("wxLogin")
+    public BaseRespResult wxLogin(@RequestParam(value = "code") String code) {
+        return BaseRespResult.successResult(userService.wxLogin(code,null,null));
     }
 
     /**

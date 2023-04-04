@@ -5,13 +5,12 @@ import java.util.Random;
 /**
  * @author yijiyin
  */
-public class GenerateTokenCodeUtil {
+public class GenerateCodeUtil {
 
-    public static String createTokenCode (){
+    public static String createCode (int n){
         String codes = "";
         Random r = new Random();
         // 20个字符
-        int n = 20;
         for (int i=0; i<n;i++){
             int num = r.nextInt(3);
             switch (num){
