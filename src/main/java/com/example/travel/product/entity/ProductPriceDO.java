@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author yijiyin
@@ -44,5 +45,5 @@ public class ProductPriceDO extends Model<ProductPriceDO> {
     /**
      * 价格日期
      */
-    private String dayDate;
+    private Date dayDate;
 }

@@ -4,14 +4,15 @@ import com.example.travel.product.dto.AddProductDTO;
 import com.example.travel.product.service.ProductService;
 import com.example.travel.util.BaseRespResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author yijiyin
  */
 @RestController
+@RequestMapping("/product")
 public class ProductController {
 
     @Autowired
@@ -44,14 +45,25 @@ public class ProductController {
     }
 
 
-//    /**
-//     * 产品列表查询
-//     * @return
-//     */
-//    @PostMapping("getProductList")
-//    public BaseRespResult getProductList(@RequestBody AddProductDTO addProductDTO) {
-//        boolean ret = productService.getProductList(addProductDTO);
-//    }
+    /**
+     * 产品列表查询
+     * @return
+     */
+    @PostMapping("getProductList")
+    public BaseRespResult getProductList(@RequestParam(value = "productName") String productName) {
+        List<AddProductDTO> dtoList = productService.getProductList(productName);
+        return BaseRespResult.successResult(dtoList);
+    }
+
+    /**
+     * 产品详情
+     * @return
+     */
+    @PostMapping("getProductDetail")
+    public BaseRespResult getProductDetail(@RequestParam(value = "productCode") String productCode) {
+        AddProductDTO dtoList = productService.getProductDetail(productCode);
+        return BaseRespResult.successResult(dtoList);
+    }
 
 
 }

@@ -1,5 +1,7 @@
 package com.example.travel.product.service;
 
+import java.util.List;
+
 /**
  * @author yijiyin
  */
@@ -9,4 +11,11 @@ public interface ProductImgService {
      * @param productCode
      */
     void deleteInfoByCode(String productCode);
+
+    /**
+     * 查询产品所有照片
+     * @param productCode
+     * @return
+     */
+    List<String> getUrlsByProductCode(String productCode);
 }

@@ -7,6 +7,8 @@ import com.example.travel.product.service.ProductImgService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author yijiyin
  */
@@ -16,5 +18,10 @@ public class ProductImgServiceImpl extends ServiceImpl<ProductImgMapper, Product
     @Override
     public void deleteInfoByCode(String productCode) {
         baseMapper.deleteInfoByCode(productCode);
+    }
+
+    @Override
+    public List<String> getUrlsByProductCode(String productCode) {
+        return baseMapper.getUrlsByProductCode(productCode);
     }
 }

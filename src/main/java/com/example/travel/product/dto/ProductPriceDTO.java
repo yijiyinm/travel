@@ -3,6 +3,7 @@ package com.example.travel.product.dto;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author yijiyin
@@ -13,7 +14,7 @@ public class ProductPriceDTO {
     /**
      * 日期到日 字符串
      */
-    private String dayDate;
+    private Date dayDate;
 
     /**
      * 原价

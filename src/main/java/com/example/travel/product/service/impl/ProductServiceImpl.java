@@ -9,11 +9,15 @@ import com.example.travel.product.entity.ProductDO;
 import com.example.travel.product.entity.ProductImgDO;
 import com.example.travel.product.entity.ProductPriceDO;
 import com.example.travel.product.service.ProductImgService;
+import com.example.travel.product.service.ProductPriceService;
 import com.example.travel.product.service.ProductService;
 import com.example.travel.util.GenerateCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author yijiyin
@@ -24,6 +28,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
 
     @Autowired
     private ProductImgService productImgService;
+    @Autowired
+    private ProductPriceService productPriceService;
 
     @Override
     public boolean addProduct(AddProductDTO addProductDTO) {
@@ -106,5 +112,48 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             return false;
         }
         return true;
+    }
+
+    @Override
+    public List<AddProductDTO> getProductList(String productName) {
+        List<ProductDO> productDOS = list(Wrappers.<ProductDO>lambdaQuery().like(ProductDO::getProductName, productName));
+        List<AddProductDTO> addProductDTOS = new ArrayList<>();
+        for (ProductDO productDO : productDOS) {
+            AddProductDTO addProductDTO = new AddProductDTO();
+            addProductDTO.setDescription(productDO.getDescription());
+            addProductDTO.setProductName(productDO.getProductName());
+            addProductDTO.setProductCode(productDO.getProductCode());
+            addProductDTO.setStatus(productDO.getStatus());
+            addProductDTOS.add(addProductDTO);
+        }
+        return addProductDTOS;
+    }
+
+    @Override
+    public AddProductDTO getProductDetail(String productCode) {
+        ProductDO productDO = getOne(Wrappers.<ProductDO>lambdaQuery().like(ProductDO::getProductName, productCode));
+        AddProductDTO addProductDTO = new AddProductDTO();
+        addProductDTO.setDescription(productDO.getDescription());
+        addProductDTO.setProductName(productDO.getProductName());
+        addProductDTO.setProductCode(productDO.getProductCode());
+        addProductDTO.setStatus(productDO.getStatus());
+
+        // 价格信息
+        List<ProductPriceDTO> productPriceDTOS = new ArrayList<>();
+        List<ProductPriceDO> productPriceDOS = productPriceService.getPriceInfoByProductCode(productCode);
+        for (ProductPriceDO priceDO : productPriceDOS){
+            ProductPriceDTO productPriceDTO = new ProductPriceDTO();
+            productPriceDTO.setDayDate(priceDO.getDayDate());
+            productPriceDTO.setPrice(priceDO.getPrice());
+            productPriceDTO.setPriceCr(priceDO.getPriceCr());
+            productPriceDTO.setPriceEt(priceDO.getPriceEt());
+            productPriceDTOS.add(productPriceDTO);
+        }
+        addProductDTO.setPriceDTOS(productPriceDTOS);
+
+        // 图片信息
+        List<String> urls = productImgService.getUrlsByProductCode(productCode);
+        addProductDTO.setUrls(urls);
+        return addProductDTO;
     }
 }

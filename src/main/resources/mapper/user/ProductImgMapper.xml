@@ -24,6 +24,9 @@
     <delete id="deleteInfoByCode">
         delete from product_img where product_code = #{productCode}
     </delete>
+    <select id="getUrlsByProductCode" resultType="java.lang.String">
+        select url from product_img where product_code=#{productCode}
+    </select>
     <!-- 基本的DAO操作结束 -->
 
     <!--    <sql id="area_select">-->
