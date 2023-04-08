@@ -27,7 +27,7 @@ public class UserController {
      * 小程序用户登录
      * @return
      */
-    @PostMapping("wxLogin")
+    @GetMapping("wxLogin")
     public BaseRespResult wxLogin(@RequestParam(value = "code") String code) {
         return BaseRespResult.successResult(userService.wxLogin(code,null,null));
     }
