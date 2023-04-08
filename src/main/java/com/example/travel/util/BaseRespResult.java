@@ -20,7 +20,7 @@ public class BaseRespResult<T> implements Serializable {
     private String errorCode;
     private String message;
     private String exceptionId;
-    private T obj;
+    private T data;
 
     /**
      * 分页-数据
@@ -35,75 +35,75 @@ public class BaseRespResult<T> implements Serializable {
     }
 
 
-    public BaseRespResult(boolean success, T obj, String code, String message, String errorCode, String exceptionId) {
+    public BaseRespResult(boolean success, T data, String code, String message, String errorCode, String exceptionId) {
         this.success = success;
-        this.obj = obj;
+        this.data = data;
         this.code = code;
         this.message = message;
         this.errorCode = errorCode;
         this.exceptionId = exceptionId;
     }
 
-    public BaseRespResult(boolean success, String type, T obj, String code, String message, String errorCode, String exceptionId) {
+    public BaseRespResult(boolean success, String type, T data, String code, String message, String errorCode, String exceptionId) {
         this.success = success;
         this.type = type;
-        this.obj = obj;
+        this.data = data;
         this.code = code;
         this.message = message;
         this.errorCode = errorCode;
         this.exceptionId = exceptionId;
     }
 
-    public BaseRespResult(List rows, T obj, String message) {
+    public BaseRespResult(List rows, T data, String message) {
         this.success = true;
         this.type = "";
         this.code = OK_CODE;
         this.rows = rows;
-        this.obj = obj;
+        this.data = data;
         this.message = message;
         this.errorCode = "";
         this.exceptionId = "";
     }
 
 
-    public static BaseRespResult errorResult(String obj) {
-        return errorResult("200", obj);
+    public static BaseRespResult errorResult(String data) {
+        return errorResult("200", data);
     }
 
-    public static BaseRespResult errorResult(String code, String obj) {
-        return new BaseRespResult(false, obj, code, obj, "", "");
+    public static BaseRespResult errorResult(String code, String data) {
+        return new BaseRespResult(false, data, code, data, "", "");
     }
 
     public static BaseRespResult errorResult(String code, String errorCode, String message) {
         return new BaseRespResult(false, message, code, message, errorCode, "");
     }
 
-    public static BaseRespResult errorResult(String code, String errorCode, Object obj) {
-        return new BaseRespResult(false, obj, code, null, errorCode, "");
+    public static BaseRespResult errorResult(String code, String errorCode, Object data) {
+        return new BaseRespResult(false, data, code, null, errorCode, "");
     }
 
-    public static BaseRespResult errorResult(String code, String errorCode, String obj, String message) {
-        return new BaseRespResult(false, obj, code, message, errorCode, "");
+    public static BaseRespResult errorResult(String code, String errorCode, String data, String message) {
+        return new BaseRespResult(false, data, code, message, errorCode, "");
     }
 
-    public static BaseRespResult errorResult(String code, String errorCode, Object obj, String message, String exceptionId) {
-        return new BaseRespResult(false, obj, code, message, errorCode, exceptionId);
+    public static BaseRespResult errorResult(String code, String errorCode, Object data, String message, String exceptionId) {
+        return new BaseRespResult(false, data, code, message, errorCode, exceptionId);
     }
 
-    public static BaseRespResult successResult(Object obj) {
-        return new BaseRespResult(true, obj, OK_CODE, OK_MESSAGE, "", "");
+    public static BaseRespResult successResult(Object data) {
+        return new BaseRespResult(true, data, OK_CODE, OK_MESSAGE, "", "");
     }
 
-    public static BaseRespResult successResult(Object obj, String message) {
-        return new BaseRespResult(true, obj, OK_CODE, message, "", "");
+    public static BaseRespResult successResult(Object data, String message) {
+        return new BaseRespResult(true, data, OK_CODE, message, "", "");
     }
 
-    public static BaseRespResult successResult(Object obj, String code, String message) {
-        return new BaseRespResult(true, obj, code, message, "", "");
+    public static BaseRespResult successResult(Object data, String code, String message) {
+        return new BaseRespResult(true, data, code, message, "", "");
     }
 
-    public static BaseRespResult successResult(String type, Object obj, String code, String message) {
-        return new BaseRespResult(true, type, obj, code, message, "", "");
+    public static BaseRespResult successResult(String type, Object data, String code, String message) {
+        return new BaseRespResult(true, type, data, code, message, "", "");
     }
 
 
@@ -133,11 +133,11 @@ public class BaseRespResult<T> implements Serializable {
     }
 
     public T getObj() {
-        return obj;
+        return data;
     }
 
-    public void setObj(T obj) {
-        this.obj = obj;
+    public void setObj(T data) {
+        this.data = data;
     }
 
     public List getRows() {
