@@ -2,6 +2,7 @@ package com.example.travel.product.dto;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -30,6 +31,19 @@ public class AddProductDTO {
      * 产品状态 1-草稿，2-上架，3-下架
      */
     private Integer status;
+
+    /**
+     * 主图url
+     */
+    private String mainUrl;
+    /**
+     * 列表-原价
+     */
+    private BigDecimal price;
+    /**
+     * 列表-成人价格（折扣价)
+     */
+    private BigDecimal priceCr;
     /**
      * 图片地址
      */
@@ -40,4 +54,13 @@ public class AddProductDTO {
      */
     private List<ProductPriceDTO> priceDTOS;
 
+    /**
+     * 标签
+     */
+    private String label;
+
+    /**
+     * 展示顺序
+     */
+    private Integer sequence;
 }

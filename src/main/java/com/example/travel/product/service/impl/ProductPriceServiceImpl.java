@@ -20,4 +20,9 @@ public class ProductPriceServiceImpl extends ServiceImpl<ProductPriceMapper,Prod
     public List<ProductPriceDO> getPriceInfoByProductCode(String productCode) {
         return list(Wrappers.<ProductPriceDO>lambdaQuery().eq(ProductPriceDO::getProductCode, productCode));
     }
+
+    @Override
+    public ProductPriceDO getPriceInfoByDay(String productCode, String day) {
+        return baseMapper.getPriceInfoByDay(productCode,day);
+    }
 }

@@ -59,11 +59,39 @@ public class ProductController {
      * 产品详情
      * @return
      */
-    @PostMapping("getProductDetail")
+    @GetMapping("getProductDetail")
     public BaseRespResult getProductDetail(@RequestParam(value = "productCode") String productCode) {
         AddProductDTO dtoList = productService.getProductDetail(productCode);
         return BaseRespResult.successResult(dtoList);
     }
+
+
+
+
+
+
+
+
+
+    /**
+     * 小程序查询商品所有table栏
+     */
+    @PostMapping("getProductAllTableWX")
+    public BaseRespResult getProductAllTableWX() {
+        List<String> strings = productService.getProductAllTableWX();
+        return BaseRespResult.successResult(strings);
+    }
+
+    /**
+     * 小程序查询上架商品列表
+     */
+    @PostMapping("getProductListWX")
+    public BaseRespResult getProductListWX(@RequestParam(value = "label") String label) {
+        List<AddProductDTO> addProductDTOS = productService.getProductListWX(label);
+        return BaseRespResult.successResult(addProductDTOS);
+    }
+
+
 
 
 }

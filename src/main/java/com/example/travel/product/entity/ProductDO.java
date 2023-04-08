@@ -22,6 +22,21 @@ public class ProductDO extends Model<ProductDO> {
     private Long id;
 
     /**
+     * 标签
+     */
+    private String label;
+
+    /**
+     * 展示顺序
+     */
+    private Integer sequence;
+
+    /**
+     * 主图url
+     */
+    private String mainUrl;
+
+    /**
      * 产品编码
      */
     private String productCode;

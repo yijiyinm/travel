@@ -37,4 +37,17 @@ public interface ProductService {
      */
     AddProductDTO getProductDetail(String productCode);
 
+    /**
+     * 小程序查询商品所有table栏
+     * @return
+     */
+    List<String> getProductAllTableWX();
+
+    /**
+     * 小程序查询上架商品列表
+     * @param label 标签
+     * @return
+     */
+    List<AddProductDTO> getProductListWX(String label);
+
 }

@@ -1,5 +1,6 @@
 package com.example.travel.product.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ public class ProductPriceDTO {
     /**
      * 日期到日 字符串
      */
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date dayDate;
 
     /**

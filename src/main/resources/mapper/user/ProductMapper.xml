@@ -5,6 +5,7 @@
     <sql id="all_columns">
         `id`,
         `product_code`,
+        `label`,
         `product_name`,
         `description`,
         `status`,
@@ -14,6 +15,7 @@
     <!-- insert_columns应该是全部没有默认值的列 -->
     <sql id="insert_columns">
         `id`,
+        `label`,
         `product_code`,
         `product_name`,
         `description`,
@@ -21,6 +23,9 @@
         `update_date`,
         `create_date`
     </sql>
+<!--    <select id="getProductAllTableWX" resultType="java.lang.String">-->
+<!--        select label from pay_product_info where status = 2-->
+<!--    </select>-->
     <!-- 基本的DAO操作结束 -->
 
     <!--    <sql id="area_select">-->
