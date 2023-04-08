@@ -1,6 +1,7 @@
 package com.example.travel.util;
 
 import com.alibaba.fastjson.JSON;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 /**
  * @author yijiyin
  */
+@Data
 public class BaseRespResult<T> implements Serializable {
     private static final long serialVersionUID = -4507574037830481719L;
 
@@ -106,79 +108,6 @@ public class BaseRespResult<T> implements Serializable {
         return new BaseRespResult(true, type, data, code, message, "", "");
     }
 
-
-
-    public boolean getSuccess() {
-        return success;
-    }
-
-    public void setSuccess(boolean success) {
-        this.success = success;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public T getObj() {
-        return data;
-    }
-
-    public void setObj(T data) {
-        this.data = data;
-    }
-
-    public List getRows() {
-        return rows;
-    }
-
-    public void setRows(List rows) {
-        this.rows = rows;
-    }
-
-    public Long getTotalCount() {
-        return totalCount;
-    }
-
-    public void setTotalCount(Long totalCount) {
-        this.totalCount = totalCount;
-    }
-
-    public String getErrorCode() {
-        return errorCode;
-    }
-
-    public void setErrorCode(String errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    public String getExceptionId() {
-        return exceptionId;
-    }
-
-    public void setExceptionId(String exceptionId) {
-        this.exceptionId = exceptionId;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 
     @Override
     public String toString() {
