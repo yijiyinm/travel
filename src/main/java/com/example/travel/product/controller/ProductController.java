@@ -65,10 +65,9 @@ public class ProductController {
     public BaseRespResult getProductDetail(@RequestParam(value = "productCode") String productCode) {
         log.error("asd");
         AddProductDTO dtoList = productService.getProductDetail(productCode);
-        return BaseRespResult.successResult(dtoList);
+        BaseRespResult baseRespResult = BaseRespResult.successResult(dtoList);
+        return baseRespResult;
     }
-
-
 
 
 
@@ -79,7 +78,7 @@ public class ProductController {
     /**
      * 小程序查询商品所有table栏
      */
-    @PostMapping("getProductAllTableWX")
+    @GetMapping("getProductAllTableWX")
     public BaseRespResult getProductAllTableWX() {
         List<String> strings = productService.getProductAllTableWX();
         return BaseRespResult.successResult(strings);
@@ -88,7 +87,7 @@ public class ProductController {
     /**
      * 小程序查询上架商品列表
      */
-    @PostMapping("getProductListWX")
+    @GetMapping("getProductListWX")
     public BaseRespResult getProductListWX(@RequestParam(value = "label") String label) {
         List<AddProductDTO> addProductDTOS = productService.getProductListWX(label);
         return BaseRespResult.successResult(addProductDTOS);

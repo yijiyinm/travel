@@ -18,6 +18,6 @@
 //                //要拦截的请求
 //                .addPathPatterns("/**")
 //                //排除请求
-//                .excludePathPatterns("/user");
+//                .excludePathPatterns("/user","/product/getProductAllTableWX","product/getProductListWX","product/getProductDetail");
 //    }
 //}
