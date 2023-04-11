@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Java ENV（此处需要修改，需要预先安装JDK）
-export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.151-5.b12.el7_4.x86_64
+export JAVA_HOME=/usr/java/jdk1.8.0_121
 export JRE_HOME=${JAVA_HOME}/jre
 
 # Apps Info
 # 应用存放地址（此处需要修改）
-APP_HOME=/cvbs/fjsc/r81
+APP_HOME=/data
 # 应用名称
-APP_NAME=travel.jar
+APP_NAME=$1
 
 # Shell Info
 
@@ -72,6 +72,7 @@ status(){
 
 case $2 in
 "start")
+        stop
         start
         ;;
 "stop")
