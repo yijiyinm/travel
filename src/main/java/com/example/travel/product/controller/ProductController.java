@@ -3,6 +3,7 @@ package com.example.travel.product.controller;
 import com.example.travel.product.dto.AddProductDTO;
 import com.example.travel.product.service.ProductService;
 import com.example.travel.util.BaseRespResult;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +12,7 @@ import java.util.List;
 /**
  * @author yijiyin
  */
+@Slf4j
 @RestController
 @RequestMapping("/product")
 public class ProductController {
@@ -61,6 +63,7 @@ public class ProductController {
      */
     @GetMapping("getProductDetail")
     public BaseRespResult getProductDetail(@RequestParam(value = "productCode") String productCode) {
+        log.error("asd");
         AddProductDTO dtoList = productService.getProductDetail(productCode);
         return BaseRespResult.successResult(dtoList);
     }
