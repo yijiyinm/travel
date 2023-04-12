@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.travel.user.dao.UserMapper;
 import com.example.travel.user.entity.UserDO;
 import com.example.travel.user.service.UserService;
+import com.example.travel.util.AppInfoEnum;
 import com.example.travel.util.GenerateCodeUtil;
 import com.example.travel.util.HttpClientUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +22,6 @@ import java.util.HashMap;
 @Slf4j
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements UserService {
-    private static String appId = "wx2e0c5d458b1896b5";
-    private static String appSecret ="6ead95f2fcd40471225aaa9083528914";
     private static String loginUrl = "https://api.weixin.qq.com/sns/jscode2session";
 
     @Override
@@ -34,8 +33,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     public String wxLogin(String code,String name,String phone) {
         log.info("登录信息code:{}",code);
         HashMap map = new HashMap(4);
-        map.put("appid",appId);
-        map.put("secret",appSecret);
+        map.put("appid",AppInfoEnum.APP_ID.getValue());
+        map.put("secret", AppInfoEnum.APP_SECRET.getValue());
         map.put("js_code",code);
         map.put("grant_type","authorization_code");
         String loginReturnString = HttpClientUtil.doGet(loginUrl,map);

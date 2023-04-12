@@ -1,11 +1,11 @@
 package com.example.travel.user.interceptor;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.example.travel.user.service.UserService;
 import com.example.travel.util.CommenUtils;
 import com.example.travel.util.ResultCode;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -61,7 +61,7 @@ public class AuthorityAnnotationInterceptor extends HandlerInterceptorAdapter {
                                 return false;
                             }
                             // todo Session token
-                            String userString = null;
+                            String userString = "";
                             if (StringUtils.isBlank(userString)) {
                                 response.getWriter().write(JSON.toJSONString(ResultCode.of(40000,"token过期，请重新登录")));
                                 return false;

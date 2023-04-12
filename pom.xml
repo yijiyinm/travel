@@ -150,6 +150,13 @@
 <!--        </dependency>-->
 
 
+        <dependency>
+            <groupId>com.github.wechatpay-apiv3</groupId>
+            <artifactId>wechatpay-java</artifactId>
+            <version>0.2.5</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
