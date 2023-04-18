@@ -16,13 +16,9 @@ import java.util.List;
 @Slf4j
 @Service("productPriceService")
 public class ProductPriceServiceImpl extends ServiceImpl<ProductPriceMapper,ProductPriceDO> implements ProductPriceService {
-    @Override
-    public List<ProductPriceDO> getPriceInfoByProductCode(String productCode) {
-        return list(Wrappers.<ProductPriceDO>lambdaQuery().eq(ProductPriceDO::getProductCode, productCode));
-    }
 
     @Override
-    public ProductPriceDO getPriceInfoByDay(String productCode, String day) {
+    public List<ProductPriceDO> getPriceInfoByDay(String productCode, String day) {
         return baseMapper.getPriceInfoByDay(productCode,day);
     }
 }

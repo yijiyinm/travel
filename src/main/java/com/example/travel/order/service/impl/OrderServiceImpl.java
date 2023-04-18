@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -61,44 +62,44 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
         String orderCode = "DD"+GenerateCodeUtil.createCode(18);
         PrepayWithRequestPaymentResponse paymentResponse=null;
         try {
-            // 根据token 查询对应用户openId
-            String openId = "";
-
-            // 初始化商户配置
-            RSAConfig config =
-                    new RSAConfig.Builder()
-                            .merchantId(merchantId)
-                            // 使用 com.wechat.pay.java.core.util 中的函数从本地文件中加载商户私钥，商户私钥会用来生成请求的签名
-                            .privateKeyFromPath(privateKeyPath)
-                            .merchantSerialNumber(merchantSerialNumber)
-                            .wechatPayCertificatesFromPath(wechatPayCertificatePath)
-                            .build();
-            // 初始化服务
-            jsapiServiceExtension =
-                    new JsapiServiceExtension.Builder()
-                            .config(config)
-                            .signType("RSA")
-                            .build();
-
-            String outTradeNo = "OTN"+GenerateCodeUtil.createCode(26);
-            PrepayRequest prepayRequest = new PrepayRequest();
-            prepayRequest.setAppid(AppInfoEnum.APP_ID.getValue());
-            prepayRequest.setMchid(AppInfoEnum.MCH_ID.getValue());
-            prepayRequest.setDescription("商品描述");
-            prepayRequest.setOutTradeNo(outTradeNo);
-            // todo 回调地址
-            prepayRequest.setNotifyUrl("");
-            Amount amount = new Amount();
-            amount.setTotal(param.getPayPrice().multiply(BigDecimal.valueOf(100)).intValue());
-            amount.setCurrency("CNY");
-            prepayRequest.setAmount(amount);
-            Payer payer = new Payer();
-            payer.setOpenid(openId);
-            prepayRequest.setPayer(payer);
-            // todo 订单有效时间或许是否需要待确认
-            // prepayRequest.setTimeExpire("");
-            paymentResponse = jsapiServiceExtension.prepayWithRequestPayment(prepayRequest);
-            log.info("预支付下单结果：{}",paymentResponse);
+              String outTradeNo = "OTN"+GenerateCodeUtil.createCode(26);
+//            // 根据token 查询对应用户openId
+//            String openId = "";
+//
+//            // 初始化商户配置
+//            RSAConfig config =
+//                    new RSAConfig.Builder()
+//                            .merchantId(merchantId)
+//                            // 使用 com.wechat.pay.java.core.util 中的函数从本地文件中加载商户私钥，商户私钥会用来生成请求的签名
+//                            .privateKeyFromPath(privateKeyPath)
+//                            .merchantSerialNumber(merchantSerialNumber)
+//                            .wechatPayCertificatesFromPath(wechatPayCertificatePath)
+//                            .build();
+//            // 初始化服务
+//            jsapiServiceExtension =
+//                    new JsapiServiceExtension.Builder()
+//                            .config(config)
+//                            .signType("RSA")
+//                            .build();
+//
+//            PrepayRequest prepayRequest = new PrepayRequest();
+//            prepayRequest.setAppid(AppInfoEnum.APP_ID.getValue());
+//            prepayRequest.setMchid(AppInfoEnum.MCH_ID.getValue());
+//            prepayRequest.setDescription("商品描述");
+//            prepayRequest.setOutTradeNo(outTradeNo);
+//            // todo 回调地址
+//            prepayRequest.setNotifyUrl("");
+//            Amount amount = new Amount();
+//            amount.setTotal(param.getPayPrice().multiply(BigDecimal.valueOf(100)).intValue());
+//            amount.setCurrency("CNY");
+//            prepayRequest.setAmount(amount);
+//            Payer payer = new Payer();
+//            payer.setOpenid(openId);
+//            prepayRequest.setPayer(payer);
+//            // todo 订单有效时间或许是否需要待确认
+//            // prepayRequest.setTimeExpire("");
+//            paymentResponse = jsapiServiceExtension.prepayWithRequestPayment(prepayRequest);
+//            log.info("预支付下单结果：{}",paymentResponse);
             orderDO.setOrderCode(orderCode);
             orderDO.setNum(param.getCrNum()+param.getEtNum());
             orderDO.setPrice(param.getPayPrice());
@@ -106,7 +107,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             orderDO.setProductName(param.getProductName());
             orderDO.setStatus(OrderStatusEnum.WAIT_PAY.getStatus());
             orderDO.setOutTradeNo(outTradeNo);
-            orderDO.setPrePayId(paymentResponse.getPackageVal());
+            //orderDO.setPrePayId(paymentResponse.getPackageVal());
+            orderDO.setPrePayId("cspayId");
             String touristIds = "";
             for (int i=0;i<param.getTouristIds().size(); i++) {
                 if (i==0) {
@@ -116,20 +118,29 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
                 }
             }
             orderDO.setTouristIds(touristIds);
-            orderDO.setOpenId(openId);
+            orderDO.setOpenId("openid123");
         } catch (Exception e) {
+            log.error("订单创建错误");
             e.printStackTrace();
             return null;
         }
+        orderDO.setCreateDate(new Date());
+        orderDO.setUpdateDate(orderDO.getCreateDate());
         orderDO.insert();
         CreateOrderReturnDTO returnDTO = new CreateOrderReturnDTO();
         returnDTO.setOrderCode(orderCode);
-        returnDTO.setPackageVal(paymentResponse.getPackageVal());
-        returnDTO.setPaySign(paymentResponse.getPaySign());
-        returnDTO.setTimeStamp(paymentResponse.getTimeStamp());
-        returnDTO.setNonceStr(paymentResponse.getNonceStr());
-        returnDTO.setAppId(paymentResponse.getAppId());
-        returnDTO.setSignType(paymentResponse.getSignType());
+//        returnDTO.setPackageVal(paymentResponse.getPackageVal());
+//        returnDTO.setPaySign(paymentResponse.getPaySign());
+//        returnDTO.setTimeStamp(paymentResponse.getTimeStamp());
+//        returnDTO.setNonceStr(paymentResponse.getNonceStr());
+//        returnDTO.setAppId(paymentResponse.getAppId());
+//        returnDTO.setSignType(paymentResponse.getSignType());
+        returnDTO.setPackageVal("prepay='cs'");
+        returnDTO.setPaySign("sign");
+        returnDTO.setTimeStamp("2423231423");
+        returnDTO.setNonceStr("345fgser32rf3");
+        returnDTO.setAppId("appid231");
+        returnDTO.setSignType("SNY");
         return returnDTO;
     }
 
@@ -142,7 +153,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     public List<SelectOrderDTO> getOrderListWX(String openId) {
         try {
             List<SelectOrderDTO> selectOrderDTOS = new ArrayList<>();
-            List<OrderDO> orderDOS = list(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getOpenId, openId));
+            //List<OrderDO> orderDOS = list(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getOpenId, openId));
+            List<OrderDO> orderDOS = list(Wrappers.<OrderDO>lambdaQuery().orderByDesc(OrderDO::getCreateDate));
             for (OrderDO orderDO : orderDOS){
                 SelectOrderDTO selectOrderDTO = new SelectOrderDTO();
                 selectOrderDTO.setProductName(orderDO.getProductName());
@@ -150,6 +162,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
                 selectOrderDTO.setOrderStatus(orderDO.getStatus());
                 selectOrderDTO.setOrderCode(orderDO.getOrderCode());
                 selectOrderDTO.setNum(orderDO.getNum());
+                selectOrderDTO.setCreateDate(orderDO.getCreateDate());
                 // 产品信息
                 AddProductDTO addProductDTO = productService.getProductDetail(orderDO.getProductCode());
                 selectOrderDTO.setMainUrl(addProductDTO.getMainUrl());

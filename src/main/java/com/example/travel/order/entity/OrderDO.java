@@ -13,7 +13,7 @@ import java.util.Date;
  * @author yijiyin
  */
 @Data
-@TableName("pay_product_info")
+@TableName("user_order")
 public class OrderDO extends Model<OrderDO> {
 
     /**

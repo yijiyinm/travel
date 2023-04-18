@@ -9,17 +9,10 @@ import java.util.List;
  */
 public interface ProductPriceService {
     /**
-     * 根据产品编码获取所有价格信息
+     * 根据产品code 查询当天及之后的价格信息
      * @param productCode
      * @return
      */
-    List<ProductPriceDO> getPriceInfoByProductCode(String productCode);
-
-    /**
-     * 根据产品code 查询当天价格信息
-     * @param productCode
-     * @return
-     */
-    ProductPriceDO getPriceInfoByDay(String productCode,String day);
+    List<ProductPriceDO> getPriceInfoByDay(String productCode,String day);
 
 }

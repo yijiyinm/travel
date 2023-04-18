@@ -51,8 +51,9 @@ public class OrderController {
      * @return
      */
     @PostMapping("getOrderDetailWX")
-    public BaseRespResult getOrderDetailWX(@RequestParam(value = "orderCode")  String orderCode) {
-        SelectOrderDTO selectOrderDTO = orderService.getOrderDetailWX(orderCode);
+    public BaseRespResult getOrderDetailWX(@RequestBody CreateOrderReturnDTO createOrderReturnDTO) {
+        System.out.println(createOrderReturnDTO);
+        SelectOrderDTO selectOrderDTO = orderService.getOrderDetailWX(createOrderReturnDTO.getOrderCode());
         return BaseRespResult.successResult(selectOrderDTO);
     }
 
@@ -102,8 +103,8 @@ public class OrderController {
      * @return
      */
     @PostMapping("deleteContactPerson")
-    public BaseRespResult deleteContactPerson(@RequestParam(value = "id")  Long id) {
-        Boolean ret = touristService.deleteTourist(id);
+    public BaseRespResult deleteContactPerson(@RequestBody TouristDTO touristDTO) {
+        Boolean ret = touristService.deleteTourist(touristDTO.getId());
         if (ret){
             return BaseRespResult.successResult("删除成功");
         }

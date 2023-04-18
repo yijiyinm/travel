@@ -43,5 +43,5 @@ public class CreateOrderDTO {
     /**
      * 游客信息
      */
-    private List<Integer> touristIds;
+    private List<Long> touristIds;
 }

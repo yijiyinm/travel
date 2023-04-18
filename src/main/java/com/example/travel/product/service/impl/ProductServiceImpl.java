@@ -153,7 +153,14 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
 
         // 价格信息
         List<ProductPriceDTO> productPriceDTOS = new ArrayList<>();
-        List<ProductPriceDO> productPriceDOS = productPriceService.getPriceInfoByProductCode(productCode);
+        // 今天的日期
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        date = calendar.getTime();
+        String day = sdf.format(date);
+        List<ProductPriceDO> productPriceDOS = productPriceService.getPriceInfoByDay(productCode,day);
         for (ProductPriceDO priceDO : productPriceDOS){
             ProductPriceDTO productPriceDTO = new ProductPriceDTO();
             productPriceDTO.setDayDate(priceDO.getDayDate());
@@ -161,6 +168,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             productPriceDTO.setPriceCr(priceDO.getPriceCr());
             productPriceDTO.setPriceEt(priceDO.getPriceEt());
             productPriceDTOS.add(productPriceDTO);
+        }
+        if (productPriceDOS !=null && productPriceDOS.size()>0) {
+            addProductDTO.setPrice(productPriceDOS.get(0).getPrice());
+            addProductDTO.setPriceCr(productPriceDOS.get(0).getPriceCr());
         }
         addProductDTO.setPriceDTOS(productPriceDTOS);
 
@@ -197,10 +208,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             date = calendar.getTime();
             String day = sdf.format(date);
 
-            ProductPriceDO priceDO = productPriceService.getPriceInfoByDay(productDO.getProductCode(),day);
-            if (priceDO!=null) {
-                addProductDTO.setPrice(priceDO.getPrice());
-                addProductDTO.setPriceCr(priceDO.getPriceCr());
+            List<ProductPriceDO> priceDOS = productPriceService.getPriceInfoByDay(productDO.getProductCode(),day);
+            if (priceDOS !=null && priceDOS.size()>0) {
+                addProductDTO.setPrice(priceDOS.get(0).getPrice());
+                addProductDTO.setPriceCr(priceDOS.get(0).getPriceCr());
             }
             addProductDTOS.add(addProductDTO);
         }

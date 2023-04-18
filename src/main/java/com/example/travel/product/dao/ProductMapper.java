@@ -11,6 +11,6 @@ import java.util.List;
  */
 public interface ProductMapper extends BaseMapper<ProductDO> {
 
-    @Select("select label from pay_product_info where status = 2")
+    @Select("select label from pay_product_info where status = 2 group by label")
     List<String> getProductAllTableWX();
 }
