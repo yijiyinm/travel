@@ -1,5 +1,7 @@
 package com.example.travel.controller;
 
+import com.example.travel.aop.Authority;
+import com.example.travel.aop.AuthorityType;
 import com.example.travel.dto.AddProductDTO;
 import com.example.travel.service.ProductService;
 import com.example.travel.util.BaseRespResult;
@@ -15,6 +17,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/product")
+@Authority(authoritytype = AuthorityType.CHECK_LOGIN)
 public class ProductController {
 
     @Autowired

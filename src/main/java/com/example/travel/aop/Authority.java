@@ -6,9 +6,9 @@ import java.lang.annotation.*;
  * @author yijiyin
  */
 @Documented
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD,ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Authority {
     // 默认验证
-    AuthorityType value() default AuthorityType.NOCHECK;
+    AuthorityType authoritytype() default AuthorityType.NOCHECK;
 }
