@@ -19,11 +19,8 @@ public class CacheConfig {
     @Bean
     public Cache<String, String> loginCache() {
         return Caffeine.newBuilder()
-                // 设置最后一次写入或访问后经过固定时间过期
                 .expireAfterWrite(10, TimeUnit.MINUTES)
-                // 初始的缓存空间大小
                 .initialCapacity(100)
-                // 缓存的最大条数
                 .maximumSize(1000)
                 .build();
     }
@@ -31,11 +28,8 @@ public class CacheConfig {
     @Bean
     public Cache<String, UserDO> userCahe() {
         return Caffeine.newBuilder()
-                // 设置最后一次写入或访问后经过固定时间过期
                 .expireAfterWrite(10, TimeUnit.MINUTES)
-                // 初始的缓存空间大小
                 .initialCapacity(100)
-                // 缓存的最大条数
                 .maximumSize(1000)
                 .build();
     }
@@ -43,11 +37,8 @@ public class CacheConfig {
     @Bean
     public Cache<String, String> sysKeyCache() {
         return Caffeine.newBuilder()
-                // 设置最后一次写入或访问后经过固定时间过期
                 .expireAfterWrite(10, TimeUnit.MINUTES)
-                // 初始的缓存空间大小
                 .initialCapacity(100)
-                // 缓存的最大条数
                 .maximumSize(1000)
                 .build(new CacheLoader<String, String>() {
                     @Override
