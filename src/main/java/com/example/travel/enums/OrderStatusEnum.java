@@ -6,9 +6,9 @@ package com.example.travel.enums;
 
 public enum OrderStatusEnum {
 
-    WAIT_PAY(1,"待支付"),
-    ALREADY_PAY(2,"支付成功"),
-    FAILURE_PAY(3,"支付失败");
+    WAIT_PAY(1,"待支付,待审核"),
+    ALREADY_PAY(2,"支付成功,审核通过"),
+    FAILURE_PAY(3,"支付失败,审核不通过");
 
     private Integer status;
     private String desc;

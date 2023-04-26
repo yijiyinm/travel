@@ -63,6 +63,16 @@ public class OrderDO extends Model<OrderDO> {
     private String touristIds;
 
     /**
+     * 是否分销商订单
+     */
+    private Boolean distributionIs;
+
+    /**
+     * 分销商编码
+     */
+    private String fxsCode;
+
+    /**
      * 商户订单号
      */
     private String outTradeNo;

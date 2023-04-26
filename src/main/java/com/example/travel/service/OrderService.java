@@ -1,11 +1,14 @@
 package com.example.travel.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.travel.dto.CreateOrderDTO;
 import com.example.travel.dto.CreateOrderReturnDTO;
 import com.example.travel.dto.SelectOrderDTO;
+import com.example.travel.param.SelOrderListParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -18,7 +21,7 @@ public interface OrderService {
      * @param createOrderDTO
      * @return
      */
-    CreateOrderReturnDTO createOrder(CreateOrderDTO createOrderDTO);
+    CreateOrderReturnDTO createOrder(CreateOrderDTO createOrderDTO,String openId);
 
     /**
      * 支付回调
@@ -35,7 +38,16 @@ public interface OrderService {
     List<SelectOrderDTO> getOrderListWX(String openId);
 
     /**
-     * 小程序用户查询支付订单列表
+     * 后台查询支付订单列表
+     * @param param
+     * @return
+     */
+    Page<SelectOrderDTO> getOrderList(SelOrderListParam param);
+
+
+
+    /**
+     * 小程序用户查询支付订单详情
      * @param openId
      * @return
      */

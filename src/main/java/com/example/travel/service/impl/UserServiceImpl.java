@@ -3,9 +3,12 @@ package com.example.travel.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.travel.dao.UserMapper;
 import com.example.travel.dao.entity.UserDO;
+import com.example.travel.dto.UserDTO;
+import com.example.travel.param.SelUserListParam;
 import com.example.travel.util.AppInfoEnum;
 import com.example.travel.util.GenerateCodeUtil;
 import com.example.travel.util.HttpClientUtil;
@@ -24,8 +27,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     private static String loginUrl = "https://api.weixin.qq.com/sns/jscode2session";
 
     @Override
-    public UserDO getUserInfo(String name) {
-        return getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getName, name));
+    public Page<UserDTO> getUserInfo(SelUserListParam param) {
+        Page<UserDTO> page = new Page(param.getCurrent(),param.getSize());
+        return this.baseMapper.getUserInfo(page,param);
     }
 
     @Override
@@ -63,6 +67,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
         // 返回给前端
         return token;
+    }
+
+    @Override
+    public String login(String userName, String userPassword) {
+        // todo 验证后台用户名密码 返回token
+        return null;
+    }
+
+    @Override
+    public void updateFXS(String openId, String fxsCode) {
+        baseMapper.updateFXS(openId,fxsCode);
     }
 
     @Override

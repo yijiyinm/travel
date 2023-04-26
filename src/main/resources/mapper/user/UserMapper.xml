@@ -19,6 +19,17 @@
         `update_date`,
         `create_date`
     </sql>
+    <select id="getUserInfo" resultType="com.example.travel.dto.UserDTO">
+        select * from user_wx where 1=1
+        <if test="param.distributionIs != null and param.distributionIs == true">
+            <if test="param.distributionIs == true">
+                and fxs_code is not null
+            </if>
+            <if test="param.distributionIs == false">
+                and fxs_code is null
+            </if>
+        </if>
+    </select>
     <!-- 基本的DAO操作结束 -->
 
 <!--    <sql id="area_select">-->

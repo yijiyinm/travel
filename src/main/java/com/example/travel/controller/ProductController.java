@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/product")
-@Authority(authoritytype = AuthorityType.CHECK_LOGIN)
+//@Authority(authoritytype = AuthorityType.CHECK_LOGIN)
 public class ProductController {
 
     @Autowired

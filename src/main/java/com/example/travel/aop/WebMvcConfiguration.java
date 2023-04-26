@@ -15,7 +15,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     AuthorityAnnotationInterceptor authorityAnnotationInterceptor;
     @Override
     public void addInterceptors(InterceptorRegistry registry){
-        registry.addInterceptor(new AuthorityAnnotationInterceptor()).addPathPatterns("/**");
+        registry.addInterceptor(new AuthorityAnnotationInterceptor()).addPathPatterns("/**")
+                .excludePathPatterns("/user","/product/getProductAllTableWX","product/getProductListWX","product/getProductDetail");
 
     }
 }

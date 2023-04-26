@@ -4,13 +4,17 @@ import com.example.travel.dto.SelectOrderDTO;
 import com.example.travel.dto.TouristDTO;
 import com.example.travel.dto.CreateOrderDTO;
 import com.example.travel.dto.CreateOrderReturnDTO;
+import com.example.travel.param.SelOrderListParam;
 import com.example.travel.service.OrderService;
 import com.example.travel.service.TouristService;
 import com.example.travel.util.BaseRespResult;
+import com.example.travel.util.CommenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author yijiyin
@@ -29,11 +33,23 @@ public class OrderController {
      * @return
      */
     @PostMapping("createOrder")
-    public BaseRespResult createOrder(@RequestBody CreateOrderDTO createOrderDTO) {
-        CreateOrderReturnDTO returnDTO = orderService.createOrder(createOrderDTO);
+    public BaseRespResult createOrder(@RequestBody CreateOrderDTO createOrderDTO, HttpServletRequest request) {
+        String tokeninfo = request.getHeader("tokeninfo");
+//        Map<String,String> map = CommenUtils.decryptUserIdAndTokenByStr(tokeninfo);
+//        String openId = map.get("openId");
+        CreateOrderReturnDTO returnDTO = orderService.createOrder(createOrderDTO,"o6U8L5MZe6-rflFrybXXAkwak3D8");
         return BaseRespResult.successResult(returnDTO);
     }
 
+
+    /**
+     * 后台获取订单列表
+     * @return
+     */
+    @PostMapping("getOrderList")
+    public BaseRespResult getOrderList(@RequestBody SelOrderListParam param) {
+        return BaseRespResult.successResult(orderService.getOrderList(param));
+    }
 
     /**
      * 小程序获取订单列表

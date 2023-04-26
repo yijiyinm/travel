@@ -42,6 +42,10 @@ public class SelectOrderDTO {
      * 订单编码
      */
     private String orderCode;
+    /**
+     * 分销商编码
+     */
+    private String fxsCode;
 
     /**
      * 订单创建时间
