@@ -58,10 +58,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     @Resource
     private TouristService touristService;
 
+
+
     public static String merchantId = AppInfoEnum.MCH_ID.getValue();
-    public static String privateKeyPath = "/Users/yijiyin/Documents/IDEAAddress/TRAVEL/travel-service/src/main/resources/apiclient_key.pem";
-    public static String merchantSerialNumber = "5B19E1719D15E8F1C7F98CA840E5EDC30DF1F5F1";
-    public static String wechatPayCertificatePath = "/Users/yijiyin/Documents/IDEAAddress/TRAVEL/travel-service/src/main/resources/apiclient_cert.pem";
+    public static String privateKeyPath = "src/main/resources/apiclient_key.pem";
+    public static String merchantSerialNumber = "39160C3B15E22A1444C9B8B6D10C33D2395CBD23";
+    public static String wechatPayCertificatePath = "src/main/resources/wechatpay.pem";
     public static JsapiServiceExtension jsapiServiceExtension;
 
     @Override
