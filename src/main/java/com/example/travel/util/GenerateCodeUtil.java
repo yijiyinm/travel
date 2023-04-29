@@ -7,26 +7,22 @@ import java.util.Random;
  */
 public class GenerateCodeUtil {
 
-    public static String createCode (int n){
-        String codes = "";
-        Random r = new Random();
-        // 20个字符
-        for (int i=0; i<n;i++){
-            int num = r.nextInt(3);
-            switch (num){
-                case 0:
-                    codes+=r.nextInt(10);
-                    break;
-                case 1:
-                    char ch=(char)(r.nextInt(26)+65);
-                    codes+=ch;
-                case 2:
-                    char ch1 = (char)(r.nextInt(26)+97);
-                    codes+=ch1;
-            }
+    static String str="zxcvbnmlkjhgfdsaqwertyuiopQWERTYUIOPASDFGHJKLZXCVBNM1234567890";
 
+    public static String createCode (int n){
+        Random random=new Random();
+
+        StringBuffer sb=new StringBuffer();
+
+
+        for(int i=0; i<n; ++i){
+            int number=random.nextInt(62);
+            sb.append(str.charAt(number));
         }
-        return codes;
+
+        //将承载的字符转换成字符串
+
+        return sb.toString();
     }
 
 }
