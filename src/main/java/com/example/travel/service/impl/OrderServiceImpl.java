@@ -21,7 +21,14 @@ import com.example.travel.util.GenerateCodeUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wechat.pay.contrib.apache.httpclient.WechatPayHttpClientBuilder;
+import com.wechat.pay.contrib.apache.httpclient.auth.PrivateKeySigner;
+import com.wechat.pay.contrib.apache.httpclient.auth.Verifier;
+import com.wechat.pay.contrib.apache.httpclient.auth.WechatPay2Credentials;
+import com.wechat.pay.contrib.apache.httpclient.auth.WechatPay2Validator;
+import com.wechat.pay.contrib.apache.httpclient.cert.CertificatesManager;
 import com.wechat.pay.contrib.apache.httpclient.util.PemUtil;
+import com.wechat.pay.java.core.Config;
+import com.wechat.pay.java.core.RSAAutoCertificateConfig;
 import com.wechat.pay.java.core.RSAConfig;
 import com.wechat.pay.java.service.payments.jsapi.JsapiServiceExtension;
 import com.wechat.pay.java.service.payments.jsapi.model.*;
@@ -42,6 +49,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,31 +67,28 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     private TouristService touristService;
 
     public static String merchantId = AppInfoEnum.MCH_ID.getValue();
-    public static String privateKeyPath = "/Users/yijiyin/Documents/IDEAAddress/TRAVEL/travel-service/src/main/resources/apiclient_key.pem";
-    public static String merchantSerialNumber = "5B19E1719D15E8F1C7F98CA840E5EDC30DF1F5F1";
-    public static String wechatPayCertificatePath = "/Users/yijiyin/Documents/IDEAAddress/TRAVEL/travel-service/src/main/resources/apiclient_cert.pem";
+    public static String privateKeyPath = "src/main/resources/apiclient_key.pem";
+    public static String merchantSerialNumber = AppInfoEnum.MERCHANT_SERIAL_NUMBER.getValue();
+    // public static String wechatPayCertificatePath = "src/main/resources/apiclient_cert.pem";
     public static JsapiServiceExtension jsapiServiceExtension;
 
+    Config config = new RSAAutoCertificateConfig.Builder()
+            .merchantId(merchantId)
+            .privateKeyFromPath(privateKeyPath)
+            .merchantSerialNumber(merchantSerialNumber)
+            .apiV3Key("18099980588188099809932233566607")
+            .build();
+
     @Override
-    public CreateOrderReturnDTO createOrder(CreateOrderDTO param,String openId) {
+    public CreateOrderReturnDTO createOrder(CreateOrderDTO param,String openId){
 
         OrderDO orderDO = new OrderDO();
         String orderCode = "DD"+GenerateCodeUtil.createCode(18);
         PrepayWithRequestPaymentResponse paymentResponse=null;
         try {
-              String outTradeNo = "OTN"+GenerateCodeUtil.createCode(20);
-            // 根据token 查询对应用户openId
-            //String openId = "oV5OM5SM-_UH1bXnZqqHWWCf4tGA";
+              String outTradeNo = "OTN"+GenerateCodeUtil.createCode(10);
 
-            // 初始化商户配置
-            RSAConfig config =
-                    new RSAConfig.Builder()
-                            .merchantId(merchantId)
-                            // 使用 com.wechat.pay.java.core.util 中的函数从本地文件中加载商户私钥，商户私钥会用来生成请求的签名
-                            .privateKeyFromPath(privateKeyPath)
-                            .merchantSerialNumber(merchantSerialNumber)
-                            .wechatPayCertificatesFromPath(wechatPayCertificatePath)
-                            .build();
+
             // 初始化服务
             jsapiServiceExtension =
                     new JsapiServiceExtension.Builder()
@@ -153,144 +158,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
 //        returnDTO.setSignType("SNY");
         return returnDTO;
     }
-
-//    @Override
-//    public CreateOrderReturnDTO createOrder(CreateOrderDTO param,String openId) throws FileNotFoundException {
-//
-//
-//        // 示例：私钥存储在文件
-//        PrivateKey merchantPrivateKey = PemUtil.loadPrivateKey(
-//                new FileInputStream("/path/to/apiclient_key.pem"));
-//
-//        //示例：私钥为String字符串
-////        PrivateKey merchantPrivateKey = PemUtil.loadPrivateKey(
-////                new ByteArrayInputStream(privateKey.getBytes("utf-8")));
-//
-//        //...
-//        WechatPayHttpClientBuilder builder = WechatPayHttpClientBuilder.create()
-//                .withMerchant(merchantId, merchantSerialNumber, merchantPrivateKey)
-//                .withWechatPay(wechatPayCertificates);
-//// ... 接下来，你仍然可以通过builder设置各种参数，来配置你的HttpClient
-//
-//// 通过WechatPayHttpClientBuilder构造的HttpClient，会自动的处理签名和验签
-//        CloseableHttpClient httpClient = builder.build();
-//
-//
-//        HttpPost httpPost = new HttpPost("https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi");
-//        httpPost.addHeader("Accept", "application/json");
-//        httpPost.addHeader("Content-type","application/json; charset=utf-8");
-//
-//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//        ObjectMapper objectMapper = new ObjectMapper();
-//
-//        ObjectNode rootNode = objectMapper.createObjectNode();
-//        rootNode.put("mchid","1900009191")
-//                .put("appid", "wxd678efh567hg6787")
-//                .put("description", "Image形象店-深圳腾大-QQ公仔")
-//                .put("notify_url", "https://www.weixin.qq.com/wxpay/pay.php")
-//                .put("out_trade_no", "1217752501201407033233368018");
-//        rootNode.putObject("amount")
-//                .put("total", 1);
-//        rootNode.putObject("payer")
-//                .put("openid", "oUpF8uMuAJO_M2pxb1Q9zNjWeS6o");
-//
-//        objectMapper.writeValue(bos, rootNode);
-//
-//        httpPost.setEntity(new StringEntity(bos.toString("UTF-8"), "UTF-8"));
-//        CloseableHttpResponse response = httpClient.execute(httpPost);
-//
-//        String bodyAsString = EntityUtils.toString(response.getEntity());
-//        System.out.println(bodyAsString);
-//
-//
-//
-//
-//        OrderDO orderDO = new OrderDO();
-//        String orderCode = "DD"+GenerateCodeUtil.createCode(18);
-//        PrepayWithRequestPaymentResponse paymentResponse=null;
-//        try {
-//            String outTradeNo = "OTN"+GenerateCodeUtil.createCode(20);
-//            // 根据token 查询对应用户openId
-//            //String openId = "oV5OM5SM-_UH1bXnZqqHWWCf4tGA";
-//
-//            // 初始化商户配置
-//            RSAConfig config =
-//                    new RSAConfig.Builder()
-//                            .merchantId(merchantId)
-//                            // 使用 com.wechat.pay.java.core.util 中的函数从本地文件中加载商户私钥，商户私钥会用来生成请求的签名
-//                            .privateKeyFromPath(privateKeyPath)
-//                            .merchantSerialNumber(merchantSerialNumber)
-//                            .wechatPayCertificatesFromPath(wechatPayCertificatePath)
-//                            .build();
-//            // 初始化服务
-//            jsapiServiceExtension =
-//                    new JsapiServiceExtension.Builder()
-//                            .config(config)
-//                            .signType("RSA")
-//                            .build();
-//
-//            PrepayRequest prepayRequest = new PrepayRequest();
-//            prepayRequest.setAppid(AppInfoEnum.APP_ID.getValue());
-//            prepayRequest.setMchid(AppInfoEnum.MCH_ID.getValue());
-//            prepayRequest.setDescription("商品描述");
-//            prepayRequest.setOutTradeNo(outTradeNo);
-//            // todo 回调地址
-//            prepayRequest.setNotifyUrl("https://test.com");
-//            Amount amount = new Amount();
-//            amount.setTotal(param.getPayPrice().multiply(BigDecimal.valueOf(100)).intValue());
-//            amount.setCurrency("CNY");
-//            prepayRequest.setAmount(amount);
-//            Payer payer = new Payer();
-//            payer.setOpenid(openId);
-//            prepayRequest.setPayer(payer);
-//            // todo 订单有效时间或许是否需要待确认
-//            // prepayRequest.setTimeExpire("");
-//            paymentResponse = jsapiServiceExtension.prepayWithRequestPayment(prepayRequest);
-//            log.info("预支付下单结果：{}",paymentResponse);
-//            orderDO.setOrderCode(orderCode);
-//            orderDO.setNum(param.getCrNum()+param.getEtNum());
-//            orderDO.setPrice(param.getPayPrice());
-//            orderDO.setProductCode(param.getProductCode());
-//            orderDO.setProductName(param.getProductName());
-//            orderDO.setStatus(OrderStatusEnum.WAIT_PAY.getStatus());
-//            orderDO.setOutTradeNo(outTradeNo);
-//            orderDO.setPrePayId(paymentResponse.getPackageVal());
-//            //orderDO.setPrePayId("cspayId");
-//            String touristIds = "";
-//            for (int i=0;i<param.getTouristIds().size(); i++) {
-//                if (i==0) {
-//                    touristIds+=param.getTouristIds().get(i);
-//                } else {
-//                    touristIds+=","+param.getTouristIds().get(i);
-//                }
-//            }
-//            orderDO.setTouristIds(touristIds);
-//            orderDO.setOpenId(openId);
-//        } catch (Exception e) {
-//            log.error("订单创建错误");
-//            e.printStackTrace();
-//            return null;
-//        }
-//        orderDO.setCreateDate(new Date());
-//        orderDO.setUpdateDate(orderDO.getCreateDate());
-//        orderDO.insert();
-//        CreateOrderReturnDTO returnDTO = new CreateOrderReturnDTO();
-//        returnDTO.setOrderCode(orderCode);
-//        returnDTO.setPackageVal(paymentResponse.getPackageVal());
-//        returnDTO.setPaySign(paymentResponse.getPaySign());
-//        returnDTO.setTimeStamp(paymentResponse.getTimeStamp());
-//        returnDTO.setNonceStr(paymentResponse.getNonceStr());
-//        returnDTO.setAppId(paymentResponse.getAppId());
-//        returnDTO.setSignType(paymentResponse.getSignType());
-////        returnDTO.setPackageVal("prepay='cs'");
-////        returnDTO.setPaySign("sign");
-////        returnDTO.setTimeStamp("2423231423");
-////        returnDTO.setNonceStr("345fgser32rf3");
-////        returnDTO.setAppId("appid231");
-////        returnDTO.setSignType("SNY");
-//        return returnDTO;
-//    }
-
     @Override
     public void wxPayNotify(HttpServletRequest request, HttpServletResponse response) {
 
