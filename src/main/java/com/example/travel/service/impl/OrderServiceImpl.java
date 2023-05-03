@@ -18,39 +18,23 @@ import com.example.travel.dto.AddProductDTO;
 import com.example.travel.service.ProductService;
 import com.example.travel.util.AppInfoEnum;
 import com.example.travel.util.GenerateCodeUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.wechat.pay.contrib.apache.httpclient.WechatPayHttpClientBuilder;
-import com.wechat.pay.contrib.apache.httpclient.auth.PrivateKeySigner;
-import com.wechat.pay.contrib.apache.httpclient.auth.Verifier;
-import com.wechat.pay.contrib.apache.httpclient.auth.WechatPay2Credentials;
-import com.wechat.pay.contrib.apache.httpclient.auth.WechatPay2Validator;
-import com.wechat.pay.contrib.apache.httpclient.cert.CertificatesManager;
-import com.wechat.pay.contrib.apache.httpclient.util.PemUtil;
 import com.wechat.pay.java.core.Config;
 import com.wechat.pay.java.core.RSAAutoCertificateConfig;
-import com.wechat.pay.java.core.RSAConfig;
+import com.wechat.pay.java.core.notification.NotificationConfig;
+import com.wechat.pay.java.core.notification.NotificationParser;
+import com.wechat.pay.java.core.notification.RequestParam;
+import com.wechat.pay.java.service.partnerpayments.jsapi.model.Transaction;
 import com.wechat.pay.java.service.payments.jsapi.JsapiServiceExtension;
 import com.wechat.pay.java.service.payments.jsapi.model.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
-import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -134,6 +118,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             }
             orderDO.setTouristIds(touristIds);
             orderDO.setOpenId(openId);
+            orderDO.setFxsCode(param.getFxsCode());
         } catch (Exception e) {
             log.error("订单创建错误");
             e.printStackTrace();
@@ -160,7 +145,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     }
     @Override
     public void wxPayNotify(HttpServletRequest request, HttpServletResponse response) {
-
+        Transaction transaction = getWxNotifyParamMap(request);
+        log.info("支付回调结果:"+transaction);
+        if (transaction != null){
+            OrderDO orderDO = this.baseMapper.getOrderByOutTradeNo(transaction.getOutTradeNo());
+            if (Transaction.TradeStateEnum.SUCCESS.equals(transaction.getTradeState())) {
+                // 支付成功 通过商户订单号同步状态
+                if (!OrderStatusEnum.ALREADY_PAY.getStatus().equals(orderDO.getStatus())) {
+                    orderDO.setStatus(OrderStatusEnum.ALREADY_PAY.getStatus());
+                }else{
+                    orderDO.setStatus(OrderStatusEnum.FAILURE_PAY.getStatus());
+                }
+            }
+        }
     }
 
     @Override
@@ -199,7 +196,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
                 .eq(param.getFxsCode() != null,OrderDO::getFxsCode,param.getFxsCode())
                 .eq(param.getOrderStatus()!=null,OrderDO::getStatus,param.getOrderStatus());
         Page<OrderDO> doPage = page(page,wrapper);
-        Page<SelectOrderDTO> dtoPage = new Page<SelectOrderDTO>();
+        Page<SelectOrderDTO> dtoPage = new Page<>();
+        dtoPage.setSize(doPage.getSize());
+        dtoPage.setTotal(doPage.getTotal());
+        dtoPage.setCurrent(doPage.getCurrent());
+        List<SelectOrderDTO> selectOrderDTOS = new ArrayList<>();
+        for (OrderDO orderDO :doPage.getRecords()){
+            SelectOrderDTO selectOrderDTO = new SelectOrderDTO();
+            selectOrderDTO.setOrderStatus(orderDO.getStatus());
+            selectOrderDTO.setPayPrice(orderDO.getPrice());
+            selectOrderDTO.setNum(orderDO.getNum());
+            selectOrderDTO.setProductName(orderDO.getProductName());
+            selectOrderDTO.setOrderCode(orderDO.getOrderCode());
+            selectOrderDTO.setFxsCode(orderDO.getFxsCode());
+        }
         return dtoPage;
     }
 
@@ -231,38 +241,41 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
         return null;
     }
 
-//    @Override
-//    public void updateFXS(String openId, String fxsCode) {
-//
-//    }
-
     /**
      * desc 获取微信支付回调请求参数
      *
      */
-//    private Map<String, String> getWxNotifyParamMap(HttpServletRequest request) {
-//// 构造 RequestParam
-//        RequestParam requestParam = new RequestParam.Builder()
-//                .serialNumber(wechatPayCertificateSerialNumber)
-//                .nonce(nonce)
-//                .signature(signature)
-//                .timestamp(timestamp)
-//                .body(requestBody)
-//                .build();
-//
-//// 如果已经初始化了 RSAAutoCertificateConfig，可直接使用
-//// 没有的话，则构造一个
-//        NotificationConfig config = new RSAAutoCertificateConfig.Builder()
-//                .merchantId(merchantId)
-//                .privateKeyFromPath(privateKeyPath)
-//                .merchantSerialNumber(merchantSerialNumber)
-//                .apiV3Key("apiV3key")
-//                .build();
-//
-//// 初始化 NotificationParser
-//        NotificationParser parser = new NotificationParser(config);
-//
-//// 以支付通知回调为例，验签、解密并转换成 Transaction
-//        Transaction transaction = parser.parse(requestParam, Transaction.class);
-//    }
+    private Transaction getWxNotifyParamMap(HttpServletRequest request) {
+
+        try {
+            BufferedReader br = request.getReader();
+            String str  = "";
+            String wholeStr = "";
+            while((str = br.readLine()) != null){
+                wholeStr += str;
+            }
+
+            // 构造 RequestParam
+            RequestParam requestParam = new RequestParam.Builder()
+                    .serialNumber(merchantSerialNumber)
+                    .nonce(request.getHeader("Wechatpay-Nonce"))
+                    .signature(request.getHeader("Wechatpay-Signature"))
+                    .timestamp(request.getHeader("Wechatpay-Timestamp"))
+                    .body(wholeStr)
+                    .build();
+
+            // 如果已经初始化了 RSAAutoCertificateConfig，可直接使用
+
+            // 初始化 NotificationParser
+            NotificationParser parser = new NotificationParser((NotificationConfig) config);
+
+            // 以支付通知回调为例，验签、解密并转换成 Transaction
+            Transaction transaction = parser.parse(requestParam, Transaction.class);
+            return transaction;
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error("支付回调异常");
+            return null;
+        }
+    }
 }

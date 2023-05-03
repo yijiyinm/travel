@@ -16,7 +16,12 @@ import com.example.travel.util.GenerateCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -216,5 +221,24 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             addProductDTOS.add(addProductDTO);
         }
         return addProductDTOS;
+    }
+
+    @Override
+    public String uploadImg(MultipartFile multipartFile, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String realPath = "/img";
+            // 创建文件
+            File file = new File(realPath);
+            // 重新生成文件名称
+            String originalFileName = GenerateCodeUtil.createCode(12)+"img";
+            multipartFile.transferTo(new File(file,originalFileName));
+            String url = request.getScheme()+"://"+realPath+originalFileName;
+            log.info("返回的图片地址:"+url);
+            return url;
+        } catch (IOException e) {
+            log.error("图片上传异常");
+            e.printStackTrace();
+        }
+        return null;
     }
 }

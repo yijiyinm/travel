@@ -41,7 +41,17 @@ public class UserController {
      */
     @PostMapping("getUserList")
     public BaseRespResult getUserList(@RequestBody SelUserListParam param) {
-        return BaseRespResult.successResult(userService.getUserInfo(param));
+        return BaseRespResult.successResult(userService.getUserPage(param));
+    }
+
+    /**
+     * 小程序用户获取基本信息
+     * @return
+     */
+    @PostMapping("getUserInfo")
+    public BaseRespResult getUserInfo(@RequestBody SelUserListParam param) {
+        // todo 通过token 获取openId
+        return BaseRespResult.successResult(userService.getUserInfo(""));
     }
 
 }

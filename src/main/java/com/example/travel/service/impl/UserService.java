@@ -10,11 +10,11 @@ import com.example.travel.param.SelUserListParam;
  */
 public interface UserService {
     /**
-     * 用户信息查询
-     * @param name 昵称
+     * 用户信息列表查询
+     * @param param 昵称
      * @return
      */
-    Page<UserDTO> getUserInfo(SelUserListParam param);
+    Page<UserDTO> getUserPage(SelUserListParam param);
 
     /**
      * 用户信息查询
@@ -47,4 +47,11 @@ public interface UserService {
      * @return
      */
     void updateFXS(String openId,String fxsCode);
+
+    /**
+     * 小程序用户获取基本信息
+     * @param  openId
+     * @return
+     */
+    UserDTO getUserInfo(String openId);
 }

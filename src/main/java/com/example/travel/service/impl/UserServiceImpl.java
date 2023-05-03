@@ -13,6 +13,7 @@ import com.example.travel.util.AppInfoEnum;
 import com.example.travel.util.GenerateCodeUtil;
 import com.example.travel.util.HttpClientUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -27,9 +28,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     private static String loginUrl = "https://api.weixin.qq.com/sns/jscode2session";
 
     @Override
-    public Page<UserDTO> getUserInfo(SelUserListParam param) {
+    public Page<UserDTO> getUserPage(SelUserListParam param) {
         Page<UserDTO> page = new Page(param.getCurrent(),param.getSize());
-        return this.baseMapper.getUserInfo(page,param);
+        return this.baseMapper.getUserPage(page,param);
     }
 
     @Override
@@ -78,6 +79,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     @Override
     public void updateFXS(String openId, String fxsCode) {
         baseMapper.updateFXS(openId,fxsCode);
+    }
+
+    @Override
+    public UserDTO getUserInfo(String openId) {
+        UserDTO userDTO = new UserDTO();
+        UserDO userDO = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getOpenId, openId));
+        if (StringUtils.isNotEmpty(userDO.getFxsCode())){
+            userDTO.setFxsCode(userDO.getFxsCode());
+        }
+        return null;
     }
 
     @Override

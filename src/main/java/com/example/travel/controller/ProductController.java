@@ -8,7 +8,10 @@ import com.example.travel.util.BaseRespResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -22,6 +25,17 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+
+    /**
+     * 上传产品图片
+     * @return
+     */
+    @PostMapping("uploadImg")
+    @ResponseBody
+    public BaseRespResult uploadImg(MultipartFile multipartFile, HttpServletRequest request, HttpServletResponse response) {
+        String imgUrl = productService.uploadImg(multipartFile,request,response);
+        return BaseRespResult.successResult(imgUrl);
+    }
 
     /**
      * 新增产品

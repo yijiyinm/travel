@@ -1,7 +1,10 @@
 package com.example.travel.service;
 
 import com.example.travel.dto.AddProductDTO;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -49,5 +52,10 @@ public interface ProductService {
      * @return
      */
     List<AddProductDTO> getProductListWX(String label);
+
+    /**
+     * 上传图片
+     */
+    String uploadImg(MultipartFile multipartFile, HttpServletRequest request, HttpServletResponse response);
 
 }

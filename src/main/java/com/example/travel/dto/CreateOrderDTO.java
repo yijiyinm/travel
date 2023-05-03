@@ -39,6 +39,11 @@ public class CreateOrderDTO {
      */
     private BigDecimal payPrice;
 
+    /**
+     * 分销商编码
+     */
+    private String fxsCode;
+
 
     /**
      * 游客信息

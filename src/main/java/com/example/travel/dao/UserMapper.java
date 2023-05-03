@@ -27,5 +27,5 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param page
      * @return
      */
-    Page<UserDTO> getUserInfo(Page<UserDTO> page, @Param("param") SelUserListParam param);
+    Page<UserDTO> getUserPage(Page<UserDTO> page, @Param("param") SelUserListParam param);
 }
