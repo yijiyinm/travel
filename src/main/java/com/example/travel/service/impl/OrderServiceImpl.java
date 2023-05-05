@@ -32,8 +32,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,14 +50,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     private TouristService touristService;
 
     public static String merchantId = AppInfoEnum.MCH_ID.getValue();
-    public static String privateKeyPath = "src/main/resources/apiclient_key.pem";
+    public static String privateKeyPath = "apiclient_key.pem";
     public static String merchantSerialNumber = AppInfoEnum.MERCHANT_SERIAL_NUMBER.getValue();
     // public static String wechatPayCertificatePath = "src/main/resources/apiclient_cert.pem";
     public static JsapiServiceExtension jsapiServiceExtension;
 
     Config config = new RSAAutoCertificateConfig.Builder()
             .merchantId(merchantId)
-            .privateKeyFromPath(privateKeyPath)
+            .privateKeyFromPath("src/main/resources/apiclient_key.pem")
             .merchantSerialNumber(merchantSerialNumber)
             .apiV3Key("18099980588188099809932233566607")
             .build();
@@ -86,7 +85,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             prepayRequest.setDescription("商品描述");
             prepayRequest.setOutTradeNo(outTradeNo);
             // todo 回调地址
-            prepayRequest.setNotifyUrl("https://www.baidu.com");
+            prepayRequest.setNotifyUrl("https://www.cloudroc.top/notify/wxPay/notify");
             Amount amount = new Amount();
             amount.setTotal(param.getPayPrice().multiply(BigDecimal.valueOf(100)).intValue());
             amount.setCurrency("CNY");
@@ -142,6 +141,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
 //        returnDTO.setAppId("appid231");
 //        returnDTO.setSignType("SNY");
         return returnDTO;
+    }
+
+    public static void main(String[] args) throws FileNotFoundException {
+        FileInputStream inputStream = new FileInputStream("src/main/resources/apiclient_cert.pem");
     }
     @Override
     public void wxPayNotify(HttpServletRequest request, HttpServletResponse response) {

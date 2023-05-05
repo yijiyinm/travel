@@ -69,8 +69,8 @@ public class ProductController {
      * @return
      */
     @PostMapping("getProductList")
-    public BaseRespResult getProductList(@RequestParam(value = "productName") String productName) {
-        List<AddProductDTO> dtoList = productService.getProductList(productName);
+    public BaseRespResult getProductList(@RequestBody AddProductDTO param) {
+        List<AddProductDTO> dtoList = productService.getProductList(param.getProductName());
         return BaseRespResult.successResult(dtoList);
     }
 
