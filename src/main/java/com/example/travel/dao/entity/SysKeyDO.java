@@ -10,7 +10,7 @@ import lombok.Data;
  * @author yijiyin
  */
 @Data
-@TableName("tourist_info")
+@TableName("sys_key")
 public class SysKeyDO extends Model<SysKeyDO> {
     /**
      * 主键
