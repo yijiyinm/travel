@@ -1,5 +1,8 @@
 package com.example.travel.controller;
 
+import com.example.travel.dao.entity.SysKeyDO;
+import com.example.travel.service.SysKeyService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,10 +15,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class WelcomeController {
 
+    @Autowired
+    private SysKeyService sysKeyService;
+
     @RequestMapping("/")
     public String view(Model model) {
-        model.addAttribute("js_version","index-96139d1d");
-        model.addAttribute("css_version","index-1183b5a2");
+        SysKeyDO js_version = sysKeyService.getInfoByKey("js_version");
+        model.addAttribute("js_version",js_version.getKeyValue());
+        SysKeyDO css_version = sysKeyService.getInfoByKey("css_version");
+        model.addAttribute("css_version",css_version.getKeyValue());
         return "index";
     }
 
