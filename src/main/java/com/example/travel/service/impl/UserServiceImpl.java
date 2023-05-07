@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.travel.cache.CacheManager;
 import com.example.travel.dao.UserMapper;
 import com.example.travel.dao.entity.UserDO;
 import com.example.travel.dto.UserDTO;
@@ -12,10 +13,8 @@ import com.example.travel.param.SelUserListParam;
 import com.example.travel.util.AppInfoEnum;
 import com.example.travel.util.GenerateCodeUtil;
 import com.example.travel.util.HttpClientUtil;
-import com.github.benmanes.caffeine.cache.Cache;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -29,8 +28,6 @@ import java.util.HashMap;
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements UserService {
     private static String loginUrl = "https://api.weixin.qq.com/sns/jscode2session";
 
-    @Autowired
-    private Cache<String, String> loginCache;
 
     @Override
     public Page<UserDTO> getUserPage(SelUserListParam param) {
@@ -70,7 +67,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         String token = GenerateCodeUtil.createCode(20);
         log.info("生成的token:{}",token);
         // 将生成的token编码和openId,sessionKey关联存储 session,全局Map或redis
-        loginCache.put(token,openId);
+        CacheManager.put(token,openId);
         // 返回给前端
         return token;
     }

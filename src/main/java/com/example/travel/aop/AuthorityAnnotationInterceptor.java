@@ -1,11 +1,11 @@
 package com.example.travel.aop;
 
 import com.alibaba.fastjson.JSON;
+import com.example.travel.cache.CacheManager;
 import com.example.travel.dao.entity.UserDO;
 import com.example.travel.service.impl.UserService;
 import com.example.travel.util.CommenUtils;
 import com.example.travel.util.ResultCode;
-import com.github.benmanes.caffeine.cache.Cache;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.annotation.Aspect;
@@ -28,12 +28,6 @@ import java.util.Objects;
 @Aspect
 @Component
 public class AuthorityAnnotationInterceptor implements HandlerInterceptor {
-
-    @Autowired
-    private Cache<String, String> loginCache;
-
-    @Autowired
-    private Cache<String, UserDO> userCache;
 
     /**
      *    用户业务层接口
@@ -71,7 +65,7 @@ public class AuthorityAnnotationInterceptor implements HandlerInterceptor {
                                 return false;
                             }
 
-                            String openId = loginCache.asMap().get(tokeninfo);
+                            String openId = CacheManager.get(tokeninfo);
                             if(StringUtils.isBlank(openId)) {
                                 response.getWriter().write(JSON.toJSONString(ResultCode.of(40000,"token错误")));
                                 return false;
