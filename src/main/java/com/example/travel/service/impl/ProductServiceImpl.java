@@ -268,6 +268,38 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
     }
 
     @Override
+    public List<AddProductDTO> getProductListWXTab() {
+        List<ProductDO> productDOS = list(Wrappers.<ProductDO>lambdaQuery().eq(ProductDO::getStatus,2).orderByAsc(ProductDO::getSequence).last("limit 3"));
+        List<AddProductDTO> addProductDTOS = new ArrayList<>();
+        for (ProductDO productDO : productDOS) {
+            AddProductDTO addProductDTO = new AddProductDTO();
+            addProductDTO.setDescription(productDO.getDescription());
+            addProductDTO.setProductName(productDO.getProductName());
+            addProductDTO.setProductCode(productDO.getProductCode());
+            addProductDTO.setLabel(productDO.getLabel());
+            addProductDTO.setMainUrl(productDO.getMainUrl());
+            addProductDTO.setSequence(productDO.getSequence());
+            // 价格信息
+
+            // 今天的日期
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = new Date();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            date = calendar.getTime();
+            String day = sdf.format(date);
+
+            List<ProductPriceDO> priceDOS = productPriceService.getPriceInfoByDay(productDO.getProductCode(),day);
+            if (priceDOS !=null && priceDOS.size()>0) {
+                addProductDTO.setPrice(priceDOS.get(0).getPrice());
+                addProductDTO.setPriceCr(priceDOS.get(0).getPriceCr());
+            }
+            addProductDTOS.add(addProductDTO);
+        }
+        return addProductDTOS;
+    }
+
+    @Override
     public String uploadImg(MultipartFile multipartFile, HttpServletRequest request, HttpServletResponse response) {
         try {
             String realPath = "/img";

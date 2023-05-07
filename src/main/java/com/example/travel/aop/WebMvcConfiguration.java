@@ -17,7 +17,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry){
         registry.addInterceptor(authorityAnnotationInterceptor).addPathPatterns("/**")
-                .excludePathPatterns("/user","/product/getProductAllTableWX","product/getProductListWX","product/getProductDetail");
+                .excludePathPatterns("/**/user","/**/getProductAllTableWX","/**/getProductListWX","/**/getProductDetail","/**/getProductListWXTab");
 
     }
 }

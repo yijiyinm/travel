@@ -136,6 +136,15 @@ public class ProductController {
         return BaseRespResult.successResult(addProductDTOS);
     }
 
+    /**
+     * 小程序查询上架商品列表
+     */
+    @GetMapping("getProductListWXTab")
+    public BaseRespResult getProductListWXTab(HttpServletRequest httpServletRequest) {
+        List<AddProductDTO> addProductDTOS = productService.getProductListWXTab();
+        return BaseRespResult.successResult(addProductDTOS);
+    }
+
 
 
 

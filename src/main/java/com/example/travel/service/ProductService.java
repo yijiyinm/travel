@@ -68,6 +68,14 @@ public interface ProductService {
      */
     List<AddProductDTO> getProductListWX(String label);
 
+
+    /**
+     * 小程序查询上架tab
+     * @param
+     * @return
+     */
+    List<AddProductDTO> getProductListWXTab();
+
     /**
      * 上传图片
      */
