@@ -315,7 +315,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             String originalFileName = GenerateCodeUtil.createCode(12)+fileName;
             // 创建文件
             File file = new File(realPath+"/"+originalFileName);
-            multipartFile.transferTo(new File(file,originalFileName));
+            multipartFile.transferTo(file);
             String url = request.getScheme()+"://"+realPath+"/"+originalFileName;
             log.info("返回的图片地址:"+url);
             return url;

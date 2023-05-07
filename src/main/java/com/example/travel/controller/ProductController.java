@@ -32,7 +32,7 @@ public class ProductController {
      */
     @PostMapping("uploadImg")
     @ResponseBody
-    public BaseRespResult uploadImg(MultipartFile multipartFile, HttpServletRequest request, HttpServletResponse response) {
+    public BaseRespResult uploadImg(@RequestPart(value = "file") MultipartFile multipartFile, HttpServletRequest request, HttpServletResponse response) {
         String imgUrl = productService.uploadImg(multipartFile,request,response);
         return BaseRespResult.successResult(imgUrl);
     }
