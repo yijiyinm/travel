@@ -1,5 +1,8 @@
 package com.example.travel.controller;
 
+import com.example.travel.aop.Authority;
+import com.example.travel.aop.AuthorityType;
+import com.example.travel.cache.CacheManager;
 import com.example.travel.dto.DistributionDTO;
 import com.example.travel.service.DistributionAuditService;
 import com.example.travel.util.BaseRespResult;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -18,20 +22,23 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/distribution")
-//@Authority(authoritytype = AuthorityType.CHECK_LOGIN)
+@Authority(authoritytype = AuthorityType.CHECK_LOGIN)
 public class DistributionAuditController {
 
     @Autowired
-    private DistributionAuditService distributionAuditService;
+    private DistributionAuditService distributionAuditService;;
 
     /**
      * 分销商申请
      * @return
      */
     @PostMapping("distributionRequest")
-    public BaseRespResult distributionRequest(@RequestBody DistributionDTO distributionDTO) {
+    public BaseRespResult distributionRequest(@RequestBody DistributionDTO distributionDTO, HttpServletRequest request) {
         // 获取 用户openId 传入
-        boolean ret = distributionAuditService.distributionRequest(distributionDTO,"");
+        String tokeninfo = request.getHeader("tokeninfo");
+
+        String openId = CacheManager.get(tokeninfo);
+        boolean ret = distributionAuditService.distributionRequest(distributionDTO,openId);
         if (ret){
             return BaseRespResult.successResult("申请成功");
         }

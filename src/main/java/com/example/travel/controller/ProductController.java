@@ -20,7 +20,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/product")
-//@Authority(authoritytype = AuthorityType.CHECK_LOGIN)
+@Authority(authoritytype = AuthorityType.CHECK_LOGIN)
 public class ProductController {
 
     @Autowired
@@ -106,7 +106,6 @@ public class ProductController {
      */
     @GetMapping("getProductDetail")
     public BaseRespResult getProductDetail(@RequestParam(value = "productCode") String productCode) {
-        log.error("asd");
         AddProductDTO dtoList = productService.getProductDetail(productCode);
         BaseRespResult baseRespResult = BaseRespResult.successResult(dtoList);
         return baseRespResult;

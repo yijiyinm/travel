@@ -97,6 +97,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     @Override
     public UserDO getUserInfoByOpenId(String openId){
-        return getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getOpenId, openId));
+        log.info("getUserInfoByOpenId openId：{}",openId);
+
+        UserDO one = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getOpenId, openId));
+        log.info("one {}",JSON.toJSONString(one));
+        return one;
     }
 }

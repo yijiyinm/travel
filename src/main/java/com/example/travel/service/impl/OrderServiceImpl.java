@@ -162,10 +162,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
 
     @Override
     public List<SelectOrderDTO> getOrderListWX(String openId) {
+        log.info("小程序获取订单用户openId:{}"+openId);
         try {
             List<SelectOrderDTO> selectOrderDTOS = new ArrayList<>();
-            //List<OrderDO> orderDOS = list(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getOpenId, openId));
-            List<OrderDO> orderDOS = list(Wrappers.<OrderDO>lambdaQuery().orderByDesc(OrderDO::getCreateDate));
+            List<OrderDO> orderDOS = list(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getOpenId, openId).orderByDesc(OrderDO::getCreateDate));
+            //List<OrderDO> orderDOS = list(Wrappers.<OrderDO>lambdaQuery().orderByDesc(OrderDO::getCreateDate));
             for (OrderDO orderDO : orderDOS){
                 SelectOrderDTO selectOrderDTO = new SelectOrderDTO();
                 selectOrderDTO.setProductName(orderDO.getProductName());
@@ -197,6 +198,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
                 .eq(param.getOrderStatus()!=null,OrderDO::getStatus,param.getOrderStatus());
         Page<OrderDO> doPage = page(page,wrapper);
         Page<SelectOrderDTO> dtoPage = new Page<>();
+        log.info("订单分页数据：{}",doPage.getTotal());
+        log.info("订单分页数据：{}",doPage.getOrders());
+        log.info("订单分页数据：{}",doPage.getSize());
+        log.info("订单分页数据：{}",doPage.getRecords());
+
         dtoPage.setSize(doPage.getSize());
         dtoPage.setTotal(doPage.getTotal());
         dtoPage.setCurrent(doPage.getCurrent());

@@ -14,7 +14,7 @@ import java.util.Date;
  * @date 2023/03/28 13:31
  */
 @Data
-@TableName("user")
+@TableName("user_wx")
 public class UserDO extends Model<UserDO> {
 
     /**

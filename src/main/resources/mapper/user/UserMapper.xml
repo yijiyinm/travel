@@ -7,6 +7,8 @@
         `name`,
         `phone`,
         `open_id`,
+        `union_id`,
+        `fxs_code`,
         `update_date`,
         `create_date`
     </sql>
@@ -16,6 +18,8 @@
         `name`,
         `phone`,
         `open_id`,
+        `union_id`,
+        `fxs_code`,
         `update_date`,
         `create_date`
     </sql>

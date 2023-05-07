@@ -1,5 +1,9 @@
 package com.example.travel.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.example.travel.aop.Authority;
+import com.example.travel.aop.AuthorityType;
+import com.example.travel.cache.CacheManager;
 import com.example.travel.dto.SelectOrderDTO;
 import com.example.travel.dto.TouristDTO;
 import com.example.travel.dto.CreateOrderDTO;
@@ -8,7 +12,6 @@ import com.example.travel.param.SelOrderListParam;
 import com.example.travel.service.OrderService;
 import com.example.travel.service.TouristService;
 import com.example.travel.util.BaseRespResult;
-import com.example.travel.util.CommenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +23,7 @@ import java.util.Map;
  * @author yijiyin
  */
 @RestController
+@Authority(authoritytype = AuthorityType.CHECK_LOGIN)
 @RequestMapping("/order")
 public class OrderController {
 
@@ -37,7 +41,11 @@ public class OrderController {
         String tokeninfo = request.getHeader("tokeninfo");
 //        Map<String,String> map = CommenUtils.decryptUserIdAndTokenByStr(tokeninfo);
 //        String openId = map.get("openId");
-        CreateOrderReturnDTO returnDTO = orderService.createOrder(createOrderDTO,"o6U8L5MZe6-rflFrybXXAkwak3D8");
+
+        String openId = CacheManager.get(tokeninfo);
+        CreateOrderReturnDTO returnDTO = orderService.createOrder(createOrderDTO,openId);
+
+        //CreateOrderReturnDTO returnDTO = orderService.createOrder(createOrderDTO,"o6U8L5MZe6-rflFrybXXAkwak3D8");
         return BaseRespResult.successResult(returnDTO);
     }
 
@@ -56,9 +64,14 @@ public class OrderController {
      * @return
      */
     @PostMapping("getOrderListWX")
-    public BaseRespResult getOrderListWX() {
-        // todo 通过token 得到openId并传入
-        List<SelectOrderDTO> selectOrderDTOS = orderService.getOrderListWX("");
+    public BaseRespResult getOrderListWX(HttpServletRequest request) {
+
+        // 验证登录
+        String tokeninfo = request.getHeader("tokeninfo");
+
+        String openId = CacheManager.get(tokeninfo);
+        //通过token 得到openId并传入
+        List<SelectOrderDTO> selectOrderDTOS = orderService.getOrderListWX(openId);
         return BaseRespResult.successResult(selectOrderDTOS);
     }
 
@@ -81,9 +94,12 @@ public class OrderController {
      * @return
      */
     @PostMapping("addContactPerson")
-    public BaseRespResult addContactPerson(@RequestBody TouristDTO touristDTO) {
-        // todo 通过token 得到openId并传入
-        Boolean ret = touristService.addTourist(touristDTO,"");
+    public BaseRespResult addContactPerson(@RequestBody TouristDTO touristDTO,HttpServletRequest request) {
+        // 通过token 得到openId并传入
+        String tokeninfo = request.getHeader("tokeninfo");
+
+        String openId = CacheManager.get(tokeninfo);
+        Boolean ret = touristService.addTourist(touristDTO,openId);
         if (ret){
             return BaseRespResult.successResult("新增成功");
         }
@@ -95,9 +111,12 @@ public class OrderController {
      * @return
      */
     @PostMapping("getContactPersonList")
-    public BaseRespResult getContactPersonList() {
-        // todo 通过token 得到openId并传入
-        List<TouristDTO> touristDTOS = touristService.getTouristList("");
+    public BaseRespResult getContactPersonList(HttpServletRequest request) {
+        // 通过token 得到openId并传入
+        String tokeninfo = request.getHeader("tokeninfo");
+
+        String openId = CacheManager.get(tokeninfo);
+        List<TouristDTO> touristDTOS = touristService.getTouristList(openId);
         return BaseRespResult.successResult(touristDTOS);
     }
 

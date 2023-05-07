@@ -1,4 +1,4 @@
-package com.example.travel.user.interceptor;
+package com.example.travel.aop;
 
 import com.example.travel.aop.AuthorityAnnotationInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     AuthorityAnnotationInterceptor authorityAnnotationInterceptor;
     @Override
     public void addInterceptors(InterceptorRegistry registry){
-        registry.addInterceptor(new AuthorityAnnotationInterceptor()).addPathPatterns("/**")
+        registry.addInterceptor(authorityAnnotationInterceptor).addPathPatterns("/**")
                 .excludePathPatterns("/user","/product/getProductAllTableWX","product/getProductListWX","product/getProductDetail");
 
     }
