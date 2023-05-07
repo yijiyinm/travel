@@ -9,6 +9,7 @@ import com.example.travel.dao.ProductMapper;
 import com.example.travel.dao.entity.ProductDO;
 import com.example.travel.dao.entity.ProductImgDO;
 import com.example.travel.dao.entity.ProductPriceDO;
+import com.example.travel.enums.LabelEnum;
 import com.example.travel.enums.OrderStatusEnum;
 import com.example.travel.service.ProductImgService;
 import com.example.travel.service.ProductPriceService;
@@ -232,7 +233,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
 
     @Override
     public List<String> getProductAllTableWX() {
-        return baseMapper.getProductAllTableWX();
+        ArrayList<String> strings = new ArrayList<>();
+        for (LabelEnum l:LabelEnum.values()){
+            strings.add(l.getName());
+        }
+
+        return strings;
     }
 
     @Override
