@@ -131,7 +131,8 @@ public class ProductController {
      * 小程序查询上架商品列表
      */
     @GetMapping("getProductListWX")
-    public BaseRespResult getProductListWX(@RequestParam(value = "label") String label) {
+    public BaseRespResult getProductListWX(HttpServletRequest httpServletRequest) {
+        String label = httpServletRequest.getParameter("label");
         List<AddProductDTO> addProductDTOS = productService.getProductListWX(label);
         return BaseRespResult.successResult(addProductDTOS);
     }
