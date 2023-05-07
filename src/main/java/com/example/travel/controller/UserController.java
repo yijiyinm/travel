@@ -1,5 +1,6 @@
 package com.example.travel.controller;
 
+import com.example.travel.dto.LoginParam;
 import com.example.travel.param.SelUserListParam;
 import com.example.travel.service.impl.UserService;
 import com.example.travel.util.BaseRespResult;
@@ -29,9 +30,9 @@ public class UserController {
      * 后台用户登录
      * @return
      */
-    @GetMapping("login")
-    public BaseRespResult login(@RequestParam(value = "userName") String userName,@RequestParam(value = "userPassword") String userPassword) {
-        return BaseRespResult.successResult(userService.login(userName,userPassword));
+    @PostMapping("login")
+    public BaseRespResult login(@RequestBody LoginParam loginParam) {
+        return BaseRespResult.successResult(userService.login(loginParam.getUsername(),loginParam.getPassword()));
     }
 
 

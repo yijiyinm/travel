@@ -34,9 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author yijiyin
@@ -148,15 +147,28 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
         Transaction transaction = getWxNotifyParamMap(request);
         log.info("支付回调结果:"+transaction);
         if (transaction != null){
-            OrderDO orderDO = this.baseMapper.getOrderByOutTradeNo(transaction.getOutTradeNo());
-            if (Transaction.TradeStateEnum.SUCCESS.equals(transaction.getTradeState())) {
+            OrderDO orderDO = null;
+            try {
+                 orderDO = getOne(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getOutTradeNo, transaction.getOutTradeNo()));
+                 log.info("用户信息:{}",orderDO);
+            } catch (Exception e) {
+                log.error("查询商户订单异常:{}",e);
+                e.printStackTrace();
+                return;
+            }
+            log.info("状态值：{}",transaction.getTradeState());
+            log.info("状态值2：{}",transaction.getTradeState().name());
+            if ("SUCCESS".equals(transaction.getTradeState().name())) {
                 // 支付成功 通过商户订单号同步状态
                 if (!OrderStatusEnum.ALREADY_PAY.getStatus().equals(orderDO.getStatus())) {
                     orderDO.setStatus(OrderStatusEnum.ALREADY_PAY.getStatus());
-                }else{
-                    orderDO.setStatus(OrderStatusEnum.FAILURE_PAY.getStatus());
                 }
+            }else{
+                orderDO.setStatus(OrderStatusEnum.FAILURE_PAY.getStatus());
             }
+
+            log.info("更新数据:{}",orderDO);
+            orderDO.updateById();
         }
     }
 
@@ -189,6 +201,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
         return null;
     }
 
+
     @Override
     public Page<SelectOrderDTO> getOrderList(SelOrderListParam param) {
         Page<OrderDO> page = new Page(param.getCurrent(),param.getSize());
@@ -196,12 +209,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
                 .eq(param.getDistributionIs()!=null,OrderDO::getDistributionIs,param.getDistributionIs())
                 .eq(param.getFxsCode() != null,OrderDO::getFxsCode,param.getFxsCode())
                 .eq(param.getOrderStatus()!=null,OrderDO::getStatus,param.getOrderStatus());
+                //.between();
         Page<OrderDO> doPage = page(page,wrapper);
         Page<SelectOrderDTO> dtoPage = new Page<>();
         log.info("订单分页数据：{}",doPage.getTotal());
-        log.info("订单分页数据：{}",doPage.getOrders());
         log.info("订单分页数据：{}",doPage.getSize());
         log.info("订单分页数据：{}",doPage.getRecords());
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+        calendar.set(Calendar.DAY_OF_MONTH,1);
+        String firstDay = sdf.format(calendar.getTime());
+        System.out.println("第一天:"+firstDay);
+        calendar.set(Calendar.DAY_OF_MONTH,calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        String lastDay = sdf.format(calendar.getTime());
+        System.out.println("最后一天："+lastDay);
 
         dtoPage.setSize(doPage.getSize());
         dtoPage.setTotal(doPage.getTotal());
@@ -265,10 +289,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
 
             // 构造 RequestParam
             RequestParam requestParam = new RequestParam.Builder()
-                    .serialNumber(merchantSerialNumber)
+                    .serialNumber(request.getHeader("Wechatpay-Serial"))
                     .nonce(request.getHeader("Wechatpay-Nonce"))
                     .signature(request.getHeader("Wechatpay-Signature"))
                     .timestamp(request.getHeader("Wechatpay-Timestamp"))
+                    .signType(request.getHeader("Wechatpay-Signature-Type"))
                     .body(wholeStr)
                     .build();
 
@@ -277,6 +302,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             // 初始化 NotificationParser
             NotificationParser parser = new NotificationParser((NotificationConfig) config);
 
+            log.info("body信息：{}",wholeStr);
             // 以支付通知回调为例，验签、解密并转换成 Transaction
             Transaction transaction = parser.parse(requestParam, Transaction.class);
             return transaction;

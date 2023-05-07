@@ -74,9 +74,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     @Override
     public String login(String userName, String userPassword) {
-        // todo 验证后台用户名密码 返回token
-
-        //loginCache.put(token,openId);
+        log.info("登录信息：{}",userName);
+        // 验证后台用户名密码 返回token
+        UserDO userDO = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getPhone, userName));
+        if (userDO != null) {
+            if (userPassword.equals(userDO.getPassword())) {
+                String token = GenerateCodeUtil.createCode(20);
+                CacheManager.put(token,userDO.getOpenId());
+                return token;
+            }
+            return null;
+        }
         return null;
     }
 

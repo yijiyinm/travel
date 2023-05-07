@@ -31,6 +31,10 @@ public class UserDO extends Model<UserDO> {
      */
     private String phone;
     /**
+     * 密码
+     */
+    private String password;
+    /**
      * openId
      */
     private String openId;

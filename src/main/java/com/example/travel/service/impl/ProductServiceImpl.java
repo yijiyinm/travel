@@ -308,13 +308,15 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
     @Override
     public String uploadImg(MultipartFile multipartFile, HttpServletRequest request, HttpServletResponse response) {
         try {
-            String realPath = "/img";
-            // 创建文件
-            File file = new File(realPath);
+            String fileName = multipartFile.getOriginalFilename();
+            String realPath = "/data/tupian";
+
             // 重新生成文件名称
-            String originalFileName = GenerateCodeUtil.createCode(12)+"img";
+            String originalFileName = GenerateCodeUtil.createCode(12)+fileName;
+            // 创建文件
+            File file = new File(realPath+"/"+originalFileName);
             multipartFile.transferTo(new File(file,originalFileName));
-            String url = request.getScheme()+"://"+realPath+originalFileName;
+            String url = request.getScheme()+"://"+realPath+"/"+originalFileName;
             log.info("返回的图片地址:"+url);
             return url;
         } catch (IOException e) {

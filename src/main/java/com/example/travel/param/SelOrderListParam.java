@@ -1,6 +1,9 @@
 package com.example.travel.param;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * @author yijiyin
@@ -35,6 +38,11 @@ public class SelOrderListParam {
     /**
      * 分销商编码
      */
-
     private String fxsCode;
+
+    /**
+     * 月份
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Data month;
 }

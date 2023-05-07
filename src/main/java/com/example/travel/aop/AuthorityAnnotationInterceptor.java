@@ -70,14 +70,14 @@ public class AuthorityAnnotationInterceptor implements HandlerInterceptor {
                             String tokeninfo = request.getHeader("tokeninfo");
 
                             if(StringUtils.isBlank(tokeninfo)){
-                                response.getWriter().write(JSON.toJSONString( ResultCode.of(40000,"token过期，请重新登录")));
+                                response.getWriter().write(JSON.toJSONString( ResultCode.of(40001,"请登录")));
                                 return false;
                             }
                             log.info("tokeninfo：{}",tokeninfo);
                             String openId  = CacheManager.get(tokeninfo);
 
                             if(StringUtils.isBlank(openId)) {
-                                response.getWriter().write(JSON.toJSONString(ResultCode.of(40000,"token错误")));
+                                response.getWriter().write(JSON.toJSONString(ResultCode.of(40000,"token过期，请重新登录")));
                                 return false;
                             }
                             log.info("userService：{}",userService);
