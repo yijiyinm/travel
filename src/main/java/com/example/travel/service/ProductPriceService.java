@@ -15,4 +15,11 @@ public interface ProductPriceService {
      */
     List<ProductPriceDO> getPriceInfoByDay(String productCode,String day);
 
+    /**
+     * 根据产品code 删除当天及之后的价格信息
+     * @param productCode
+     * @return
+     */
+    void deletePriceInfoByDay(String productCode,String day);
+
 }

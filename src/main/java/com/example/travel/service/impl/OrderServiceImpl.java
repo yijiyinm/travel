@@ -50,14 +50,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     private TouristService touristService;
 
     public static String merchantId = AppInfoEnum.MCH_ID.getValue();
-    public static String privateKeyPath = "apiclient_key.pem";
+    public static String privateKeyPath = "./apiclient_key.pem";
     public static String merchantSerialNumber = AppInfoEnum.MERCHANT_SERIAL_NUMBER.getValue();
     // public static String wechatPayCertificatePath = "src/main/resources/apiclient_cert.pem";
     public static JsapiServiceExtension jsapiServiceExtension;
 
     Config config = new RSAAutoCertificateConfig.Builder()
             .merchantId(merchantId)
-            .privateKeyFromPath("src/main/resources/apiclient_key.pem")
+            .privateKeyFromPath("./apiclient_key.pem")
             .merchantSerialNumber(merchantSerialNumber)
             .apiV3Key("18099980588188099809932233566607")
             .build();
@@ -143,9 +143,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
         return returnDTO;
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
-        FileInputStream inputStream = new FileInputStream("src/main/resources/apiclient_cert.pem");
-    }
     @Override
     public void wxPayNotify(HttpServletRequest request, HttpServletResponse response) {
         Transaction transaction = getWxNotifyParamMap(request);
@@ -212,7 +209,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             selectOrderDTO.setProductName(orderDO.getProductName());
             selectOrderDTO.setOrderCode(orderDO.getOrderCode());
             selectOrderDTO.setFxsCode(orderDO.getFxsCode());
+            selectOrderDTOS.add(selectOrderDTO);
         }
+        dtoPage.setRecords(selectOrderDTOS);
         return dtoPage;
     }
 

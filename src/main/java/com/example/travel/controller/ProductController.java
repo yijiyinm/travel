@@ -63,6 +63,32 @@ public class ProductController {
         return BaseRespResult.errorResult("编辑失败");
     }
 
+    /**
+     * 上架/下架商品
+     * @return
+     */
+    @PostMapping("updateProductStatus")
+    public BaseRespResult updateProductStatus(@RequestBody AddProductDTO addProductDTO) {
+        boolean ret = productService.updateProductStatus(addProductDTO.getProductCode(),addProductDTO.getStatus());
+        if (ret){
+            return BaseRespResult.successResult("操作成功");
+        }
+        return BaseRespResult.errorResult("操作失败");
+    }
+
+    /**
+     * 删除下架商品
+     * @return
+     */
+    @PostMapping("deleteProduct")
+    public BaseRespResult deleteProduct(@RequestBody AddProductDTO addProductDTO) {
+        boolean ret = productService.deleteProduct(addProductDTO.getProductCode());
+        if (ret){
+            return BaseRespResult.successResult("操作成功");
+        }
+        return BaseRespResult.errorResult("操作失败");
+    }
+
 
     /**
      * 产品列表查询

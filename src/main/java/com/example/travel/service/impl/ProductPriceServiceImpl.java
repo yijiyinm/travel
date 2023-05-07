@@ -20,4 +20,9 @@ public class ProductPriceServiceImpl extends ServiceImpl<ProductPriceMapper,Prod
     public List<ProductPriceDO> getPriceInfoByDay(String productCode, String day) {
         return baseMapper.getPriceInfoByDay(productCode,day);
     }
+
+    @Override
+    public void deletePriceInfoByDay(String productCode, String day) {
+         baseMapper.deletePriceInfoByDay(productCode,day);
+    }
 }

@@ -27,6 +27,21 @@ public interface ProductService {
     boolean updateProduct(AddProductDTO addProductDTO);
 
     /**
+     * 上架/下架
+     * @param productCode
+     * @param status
+     * @return
+     */
+    boolean updateProductStatus(String productCode,Integer status);
+
+    /**
+     * 删除下架商品
+     * @param productCode
+     * @return
+     */
+    boolean deleteProduct(String productCode);
+
+    /**
      * 查询商品列表
      * @param productName
      * @return

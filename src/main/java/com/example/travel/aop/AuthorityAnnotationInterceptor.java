@@ -70,17 +70,9 @@ public class AuthorityAnnotationInterceptor implements HandlerInterceptor {
                                 response.getWriter().write(JSON.toJSONString( ResultCode.of(40000,"token过期，请重新登录")));
                                 return false;
                             }
-                            // todo Session token
-                            String userString = "";
-                            if (StringUtils.isBlank(userString)) {
-                                response.getWriter().write(JSON.toJSONString(ResultCode.of(40000,"token过期，请重新登录")));
-                                return false;
-                            }
 
-                            Map<String,String> map = CommenUtils.decryptUserIdAndTokenByStr(tokeninfo);
-                            String token = map.get("token");
-                            String openId = map.get("openId");
-                            if(StringUtils.isBlank(token) || StringUtils.isBlank(openId)) {
+                            String openId = loginCache.asMap().get(tokeninfo);
+                            if(StringUtils.isBlank(openId)) {
                                 response.getWriter().write(JSON.toJSONString(ResultCode.of(40000,"token错误")));
                                 return false;
                             }
@@ -91,13 +83,8 @@ public class AuthorityAnnotationInterceptor implements HandlerInterceptor {
 
                             }
 
-                            String t= (String) loginCache.asMap().get(openId);
-                            if(!token.equals(t)){
-                                response.getWriter().write(JSON.toJSONString(ResultCode.of(40000,"token过期")));
-                                return false;
-                            }
-                            loginCache.put(openId, token);
-                            userCache.put(Thread.currentThread().getName(), userDO);
+                            //loginCache.put(openId, token);
+                            //userCache.put(Thread.currentThread().getName(), userDO);
                             return true;
                         }
 

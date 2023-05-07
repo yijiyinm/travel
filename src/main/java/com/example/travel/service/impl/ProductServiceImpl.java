@@ -9,6 +9,7 @@ import com.example.travel.dao.ProductMapper;
 import com.example.travel.dao.entity.ProductDO;
 import com.example.travel.dao.entity.ProductImgDO;
 import com.example.travel.dao.entity.ProductPriceDO;
+import com.example.travel.enums.OrderStatusEnum;
 import com.example.travel.service.ProductImgService;
 import com.example.travel.service.ProductPriceService;
 import com.example.travel.service.ProductService;
@@ -42,6 +43,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
 
     @Override
     public boolean addProduct(AddProductDTO addProductDTO) {
+        log.info("商品新增参数:{}",addProductDTO);
         try {
             String productCode = GenerateCodeUtil.createCode(12);
             // 产品主表信息入库
@@ -49,31 +51,38 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             productDO.setProductCode(productCode);
             productDO.setProductName(addProductDTO.getProductName());
             productDO.setDescription(addProductDTO.getDescription());
-            productDO.setStatus(addProductDTO.getStatus());
+            productDO.setStatus(OrderStatusEnum.WAIT_PAY.getStatus());
             productDO.setLabel(addProductDTO.getLabel());
             productDO.setSequence(addProductDTO.getSequence());
             productDO.setMainUrl(addProductDTO.getMainUrl());
             productDO.insert();
 
             // 图片信息存储
-            for(String url :addProductDTO.getUrls()){
-                ProductImgDO productImgDO = new ProductImgDO();
-                productImgDO.setProductCode(productCode);
-                productImgDO.setImgUrl(url);
-                productImgDO.insert();
+            if (addProductDTO.getUrls() != null){
+                for(String url : addProductDTO.getUrls()){
+                    ProductImgDO productImgDO = new ProductImgDO();
+                    productImgDO.setProductCode(productCode);
+                    productImgDO.setImgUrl(url);
+                    productImgDO.insert();
+                }
             }
+
             // 每日/对应价格存储
-            for (ProductPriceDTO priceDTO : addProductDTO.getPriceDTOS()){
-                ProductPriceDO priceDO = new ProductPriceDO();
-                priceDO.setProductCode(productCode);
-                priceDO.setDayDate(priceDTO.getDayDate());
-                priceDO.setPrice(priceDTO.getPrice());
-                priceDO.setPriceCr(priceDTO.getPriceCr());
-                priceDO.setPriceEt(priceDTO.getPriceEt());
-                priceDO.insert();
+            if (addProductDTO.getPriceDTOS() !=null ){
+                for (ProductPriceDTO priceDTO : addProductDTO.getPriceDTOS()){
+                    log.info("价格存入");
+                    ProductPriceDO priceDO = new ProductPriceDO();
+                    priceDO.setProductCode(productCode);
+                    priceDO.setDayDate(priceDTO.getDayDate());
+                    priceDO.setPrice(priceDTO.getPrice());
+                    priceDO.setPriceCr(priceDTO.getPriceCr());
+                    priceDO.setPriceEt(priceDTO.getPriceEt());
+                    priceDO.insert();
+                }
             }
+
         } catch (Exception e) {
-            log.error("产品新增异常：{}",e.getMessage());
+            log.error("产品新增异常："+e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -82,6 +91,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
 
     @Override
     public boolean updateProduct(AddProductDTO addProductDTO) {
+        log.info("编辑商品信息：{}",addProductDTO);
         try {
             // 产品主表信息入库
             ProductDO productDO = getOne(Wrappers.<ProductDO>lambdaQuery().eq(ProductDO::getProductCode, addProductDTO.getProductCode()));
@@ -91,7 +101,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             }
             productDO.setProductName(addProductDTO.getProductName());
             productDO.setDescription(addProductDTO.getDescription());
-            productDO.setStatus(addProductDTO.getStatus());
             productDO.setLabel(addProductDTO.getLabel());
             productDO.setSequence(addProductDTO.getSequence());
             productDO.setMainUrl(addProductDTO.getMainUrl());
@@ -100,25 +109,39 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             // 删除之前的照片 重新保存
             productImgService.deleteInfoByCode(addProductDTO.getProductCode());
             // 图片信息存储
-            for(String url :addProductDTO.getUrls()){
-                ProductImgDO productImgDO = new ProductImgDO();
-                productImgDO.setProductCode(productDO.getProductCode());
-                productImgDO.setImgUrl(url);
-                productImgDO.insert();
+            if(addProductDTO.getUrls()!=null){
+                for(String url :addProductDTO.getUrls()){
+                    ProductImgDO productImgDO = new ProductImgDO();
+                    productImgDO.setProductCode(productDO.getProductCode());
+                    productImgDO.setImgUrl(url);
+                    productImgDO.insert();
+                }
             }
 
-            // 删除当前时间及之后的日期数据 再保存
 
-            // 每日/对应价格存储
-            for (ProductPriceDTO priceDTO : addProductDTO.getPriceDTOS()){
-                ProductPriceDO priceDO = new ProductPriceDO();
-                priceDO.setProductCode(productDO.getProductCode());
-                priceDO.setDayDate(priceDTO.getDayDate());
-                priceDO.setPrice(priceDTO.getPrice());
-                priceDO.setPriceCr(priceDTO.getPriceCr());
-                priceDO.setPriceEt(priceDTO.getPriceEt());
-                priceDO.insert();
+            if(addProductDTO.getPriceDTOS()!=null){
+                // 删除当前时间及之后的日期数据 再保存
+                // 今天的日期
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = new Date();
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(date);
+                date = calendar.getTime();
+                String day = sdf.format(date);
+                productPriceService.deletePriceInfoByDay(addProductDTO.getProductCode(),day);
+
+                // 每日/对应价格存储
+                for (ProductPriceDTO priceDTO : addProductDTO.getPriceDTOS()){
+                    ProductPriceDO priceDO = new ProductPriceDO();
+                    priceDO.setProductCode(productDO.getProductCode());
+                    priceDO.setDayDate(priceDTO.getDayDate());
+                    priceDO.setPrice(priceDTO.getPrice());
+                    priceDO.setPriceCr(priceDTO.getPriceCr());
+                    priceDO.setPriceEt(priceDTO.getPriceEt());
+                    priceDO.insert();
+                }
             }
+
         } catch (Exception e) {
             log.error("产品新增异常：{}",e.getMessage());
             e.printStackTrace();
@@ -128,8 +151,29 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
     }
 
     @Override
+    public boolean updateProductStatus(String productCode, Integer status) {
+        ProductDO productDO = getOne(Wrappers.<ProductDO>lambdaQuery().eq(ProductDO::getProductCode, productCode));
+        if(productDO == null){
+            log.error("无此商品信息:{}"+productCode);
+            return false;
+        }
+        productDO.setStatus(status);
+        productDO.updateById();
+        return true;
+    }
+
+    @Override
+    public boolean deleteProduct(String productCode) {
+        ProductDO productDO = getOne(Wrappers.<ProductDO>lambdaQuery().eq(ProductDO::getProductCode, productCode));
+        if (productDO != null && (OrderStatusEnum.FAILURE_PAY.getStatus().equals(productDO.getStatus())||OrderStatusEnum.WAIT_PAY.getStatus().equals(productDO.getStatus()))){
+            return productDO.deleteById();
+        }
+        return false;
+    }
+
+    @Override
     public List<AddProductDTO> getProductList(String productName) {
-        List<ProductDO> productDOS = list(Wrappers.<ProductDO>lambdaQuery().like(StringUtils.isNotBlank(productName),ProductDO::getProductName, productName).orderByAsc(ProductDO::getSequence));
+        List<ProductDO> productDOS = list(Wrappers.<ProductDO>lambdaQuery().like(StringUtils.isNotBlank(productName),ProductDO::getProductName, productName).orderByDesc(ProductDO::getSequence,ProductDO::getCreateDate));
         List<AddProductDTO> addProductDTOS = new ArrayList<>();
         for (ProductDO productDO : productDOS) {
             AddProductDTO addProductDTO = new AddProductDTO();

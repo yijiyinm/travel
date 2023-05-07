@@ -12,8 +12,10 @@ import com.example.travel.param.SelUserListParam;
 import com.example.travel.util.AppInfoEnum;
 import com.example.travel.util.GenerateCodeUtil;
 import com.example.travel.util.HttpClientUtil;
+import com.github.benmanes.caffeine.cache.Cache;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -26,6 +28,9 @@ import java.util.HashMap;
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements UserService {
     private static String loginUrl = "https://api.weixin.qq.com/sns/jscode2session";
+
+    @Autowired
+    private Cache<String, String> loginCache;
 
     @Override
     public Page<UserDTO> getUserPage(SelUserListParam param) {
@@ -64,8 +69,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         // 生成以sessionKey和token为对应的token编码
         String token = GenerateCodeUtil.createCode(20);
         log.info("生成的token:{}",token);
-        // todo 将生成的token编码和openId,sessionKey关联存储 session,全局Map或redis
-
+        // 将生成的token编码和openId,sessionKey关联存储 session,全局Map或redis
+        loginCache.put(token,openId);
         // 返回给前端
         return token;
     }
@@ -73,6 +78,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     @Override
     public String login(String userName, String userPassword) {
         // todo 验证后台用户名密码 返回token
+
+        //loginCache.put(token,openId);
         return null;
     }
 
