@@ -2,11 +2,13 @@ package com.example.travel.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.travel.cache.CacheManager;
 import com.example.travel.dao.UserMapper;
+import com.example.travel.dao.entity.OrderDO;
 import com.example.travel.dao.entity.UserDO;
 import com.example.travel.dto.UserDTO;
 import com.example.travel.param.SelUserListParam;
@@ -17,7 +19,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -31,8 +35,36 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     @Override
     public Page<UserDTO> getUserPage(SelUserListParam param) {
-        Page<UserDTO> page = new Page(param.getCurrent(),param.getSize());
-        return this.baseMapper.getUserPage(page,param);
+        Page<UserDTO> pageDTO = new Page(param.getCurrent(),param.getSize());
+
+        Page<UserDO> page = new Page(param.getCurrent(),param.getSize());
+        LambdaQueryWrapper<UserDO> wrapper = Wrappers.lambdaQuery();
+
+        if (param.getDistributionIs() != null){
+            if (param.getDistributionIs()){
+                // 是供应商
+                wrapper.isNotNull(UserDO::getFxsCode);
+            }else {
+                wrapper.isNull(UserDO::getFxsCode);
+            }
+        }
+        Page<UserDO> doPage = page(page,wrapper);
+        log.info("用户总数：{}",doPage.getTotal());
+        pageDTO.setTotal(doPage.getTotal());
+        List<UserDTO> userDTOS = new ArrayList<>();
+        for (UserDO userDO :doPage.getRecords()){
+            UserDTO userDTO = new UserDTO();
+            userDTO.setFxsCode(userDO.getFxsCode());
+            userDTO.setName(userDO.getName());
+            userDTO.setOpenId(userDO.getOpenId());
+            userDTO.setPhone(userDO.getPhone());
+            userDTO.setCreateDate(userDO.getCreateDate());
+            userDTOS.add(userDTO);
+        }
+        pageDTO.setRecords(userDTOS);
+
+
+        return pageDTO;
     }
 
     @Override

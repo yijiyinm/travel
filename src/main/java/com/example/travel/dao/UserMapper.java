@@ -18,7 +18,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param fxsCode
      * @return
      */
-    @Update("update user set fxs_code = #{fxsCode} where open_id=#{openId}")
+    @Update("update user_wx set fxs_code = #{fxsCode} where open_id=#{openId}")
     void updateFXS(@Param("openId") String openId, @Param("fxsCode") String fxsCode);
 
     /**

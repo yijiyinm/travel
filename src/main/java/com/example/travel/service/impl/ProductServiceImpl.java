@@ -165,6 +165,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
 
     @Override
     public boolean deleteProduct(String productCode) {
+        log.info("");
         ProductDO productDO = getOne(Wrappers.<ProductDO>lambdaQuery().eq(ProductDO::getProductCode, productCode));
         if (productDO != null && (OrderStatusEnum.FAILURE_PAY.getStatus().equals(productDO.getStatus())||OrderStatusEnum.WAIT_PAY.getStatus().equals(productDO.getStatus()))){
             return productDO.deleteById();
@@ -316,7 +317,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             // 创建文件
             File file = new File(realPath+"/"+originalFileName);
             multipartFile.transferTo(file);
-            String url = request.getScheme()+"://"+realPath+"/"+originalFileName;
+            String url = "https://www.cloudroc.top/files/"+originalFileName;
             log.info("返回的图片地址:"+url);
             return url;
         } catch (IOException e) {
