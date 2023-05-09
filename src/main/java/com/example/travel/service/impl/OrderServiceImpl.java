@@ -205,45 +205,52 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
 
     @Override
     public Page<SelectOrderDTO> getOrderList(SelOrderListParam param) {
-        Page<OrderDO> page = new Page(param.getCurrent(),param.getSize());
-        LambdaQueryWrapper<OrderDO> wrapper = Wrappers.<OrderDO>lambdaQuery()
-                .eq(param.getDistributionIs()!=null,OrderDO::getDistributionIs,param.getDistributionIs())
-                .eq(param.getFxsCode() != null,OrderDO::getFxsCode,param.getFxsCode())
-                .eq(param.getOrderStatus()!=null,OrderDO::getStatus,param.getOrderStatus());
-                //.between();
-        Page<OrderDO> doPage = page(page,wrapper);
-        Page<SelectOrderDTO> dtoPage = new Page<>();
-        log.info("订单分页数据：{}",doPage.getTotal());
-        log.info("订单分页数据：{}",doPage.getSize());
-        log.info("订单分页数据：{}",doPage.getRecords());
+        try {
+            Page<OrderDO> page = new Page(param.getCurrent(),param.getSize());
+            LambdaQueryWrapper<OrderDO> wrapper = Wrappers.<OrderDO>lambdaQuery()
+                    .eq(param.getDistributionIs()!=null,OrderDO::getDistributionIs,param.getDistributionIs())
+                    .eq(param.getFxsCode() != null,OrderDO::getFxsCode,param.getFxsCode())
+                    .eq(param.getOrderStatus()!=null,OrderDO::getStatus,param.getOrderStatus());
+            //.between();
+            Page<OrderDO> doPage = page(page,wrapper);
+            Page<SelectOrderDTO> dtoPage = new Page<>();
+            log.info("订单分页数据：{}",doPage.getTotal());
+            log.info("订单分页数据：{}",doPage.getSize());
+            log.info("订单分页数据：{}",doPage.getRecords());
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = new Date();
-        Calendar calendar = new GregorianCalendar();
-        calendar.setTime(date);
-        calendar.set(Calendar.DAY_OF_MONTH,1);
-        String firstDay = sdf.format(calendar.getTime());
-        System.out.println("第一天:"+firstDay);
-        calendar.set(Calendar.DAY_OF_MONTH,calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-        String lastDay = sdf.format(calendar.getTime());
-        System.out.println("最后一天："+lastDay);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = new Date();
+            Calendar calendar = new GregorianCalendar();
+            calendar.setTime(date);
+            calendar.set(Calendar.DAY_OF_MONTH,1);
+            String firstDay = sdf.format(calendar.getTime());
+            log.info("第一天:"+firstDay);
+            calendar.set(Calendar.DAY_OF_MONTH,calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+            String lastDay = sdf.format(calendar.getTime());
+            log.info("最后一天："+lastDay);
 
-        dtoPage.setSize(doPage.getSize());
-        dtoPage.setTotal(doPage.getTotal());
-        dtoPage.setCurrent(doPage.getCurrent());
-        List<SelectOrderDTO> selectOrderDTOS = new ArrayList<>();
-        for (OrderDO orderDO :doPage.getRecords()){
-            SelectOrderDTO selectOrderDTO = new SelectOrderDTO();
-            selectOrderDTO.setOrderStatus(orderDO.getStatus());
-            selectOrderDTO.setPayPrice(orderDO.getPrice());
-            selectOrderDTO.setNum(orderDO.getNum());
-            selectOrderDTO.setProductName(orderDO.getProductName());
-            selectOrderDTO.setOrderCode(orderDO.getOrderCode());
-            selectOrderDTO.setFxsCode(orderDO.getFxsCode());
-            selectOrderDTOS.add(selectOrderDTO);
+            dtoPage.setSize(doPage.getSize());
+            dtoPage.setTotal(doPage.getTotal());
+            dtoPage.setCurrent(doPage.getCurrent());
+            List<SelectOrderDTO> selectOrderDTOS = new ArrayList<>();
+            for (OrderDO orderDO :doPage.getRecords()){
+                SelectOrderDTO selectOrderDTO = new SelectOrderDTO();
+                selectOrderDTO.setOrderStatus(orderDO.getStatus());
+                selectOrderDTO.setPayPrice(orderDO.getPrice());
+                selectOrderDTO.setNum(orderDO.getNum());
+                selectOrderDTO.setProductName(orderDO.getProductName());
+                selectOrderDTO.setOrderCode(orderDO.getOrderCode());
+                selectOrderDTO.setFxsCode(orderDO.getFxsCode());
+                selectOrderDTO.setCreateDate(orderDO.getCreateDate());
+                selectOrderDTOS.add(selectOrderDTO);
+            }
+            dtoPage.setRecords(selectOrderDTOS);
+            return dtoPage;
+        } catch (Exception e) {
+            log.error("查询订单列表异常:{}",e);
+            e.printStackTrace();
         }
-        dtoPage.setRecords(selectOrderDTOS);
-        return dtoPage;
+        return null;
     }
 
     @Override

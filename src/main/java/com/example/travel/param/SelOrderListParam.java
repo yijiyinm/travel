@@ -43,6 +43,5 @@ public class SelOrderListParam {
     /**
      * 月份
      */
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private Data month;
+    private String month;
 }
