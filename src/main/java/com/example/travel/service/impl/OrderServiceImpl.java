@@ -50,16 +50,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
 
     public static String merchantId = AppInfoEnum.MCH_ID.getValue();
     public static String privateKeyPath = "./apiclient_key.pem";
+    public static String apiV3Key = "18099980588188099809932233566607";
     public static String merchantSerialNumber = AppInfoEnum.MERCHANT_SERIAL_NUMBER.getValue();
     // public static String wechatPayCertificatePath = "src/main/resources/apiclient_cert.pem";
     public static JsapiServiceExtension jsapiServiceExtension;
 
-    Config config = new RSAAutoCertificateConfig.Builder()
-            .merchantId(merchantId)
-            .privateKeyFromPath("./apiclient_key.pem")
-            .merchantSerialNumber(merchantSerialNumber)
-            .apiV3Key("18099980588188099809932233566607")
-            .build();
+
 
     @Override
     public CreateOrderReturnDTO createOrder(CreateOrderDTO param,String openId){
@@ -69,7 +65,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
         PrepayWithRequestPaymentResponse paymentResponse=null;
         try {
               String outTradeNo = "OTN"+GenerateCodeUtil.createCode(10);
-
+            Config config = new RSAAutoCertificateConfig.Builder()
+                    .merchantId(merchantId)
+                    .privateKeyFromPath(privateKeyPath)
+                    .merchantSerialNumber(merchantSerialNumber)
+                    .apiV3Key(apiV3Key)
+                    .build();
 
             // 初始化服务
             jsapiServiceExtension =
@@ -280,6 +281,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     private Transaction getWxNotifyParamMap(HttpServletRequest request) {
 
         try {
+            Config config = new RSAAutoCertificateConfig.Builder()
+                    .merchantId(merchantId)
+                    .privateKeyFromPath(privateKeyPath)
+                    .merchantSerialNumber(merchantSerialNumber)
+                    .apiV3Key(apiV3Key)
+                    .build();
             BufferedReader br = request.getReader();
             String str  = "";
             String wholeStr = "";
