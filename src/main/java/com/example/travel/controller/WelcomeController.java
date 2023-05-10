@@ -24,7 +24,7 @@ public class WelcomeController {
         model.addAttribute("js_version",js_version.getKeyValue());
         SysKeyDO css_version = sysKeyService.getInfoByKey("css_version");
         model.addAttribute("css_version",css_version.getKeyValue());
-        return "index";
+        return "forward:index.html";
     }
     @RequestMapping("/index")
     public String index(Model model) {
@@ -32,7 +32,7 @@ public class WelcomeController {
         model.addAttribute("js_version",js_version.getKeyValue());
         SysKeyDO css_version = sysKeyService.getInfoByKey("css_version");
         model.addAttribute("css_version",css_version.getKeyValue());
-        return "index";
+        return "forward:index.html";
     }
 
 }
