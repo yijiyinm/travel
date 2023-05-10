@@ -1,5 +1,6 @@
 package com.example.travel.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.travel.aop.Authority;
 import com.example.travel.aop.AuthorityType;
 import com.example.travel.cache.CacheManager;
@@ -50,7 +51,7 @@ public class DistributionAuditController {
      */
     @PostMapping("getDistributionList")
     public BaseRespResult getDistributionList(@RequestBody DistributionDTO distributionDTO){
-        List<DistributionDTO> distributionDTOS = distributionAuditService.getDistributionList(distributionDTO);
+        Page<DistributionDTO> distributionDTOS = distributionAuditService.getDistributionList(distributionDTO);
         return BaseRespResult.successResult(distributionDTOS);
     }
 

@@ -1,5 +1,6 @@
 package com.example.travel.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.travel.dto.AddProductDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,10 +44,10 @@ public interface ProductService {
 
     /**
      * 查询商品列表
-     * @param productName
+     * @param addProductDTO
      * @return
      */
-    List<AddProductDTO> getProductList(String productName);
+    Page<AddProductDTO> getProductList(AddProductDTO addProductDTO);
 
     /**
      * 查询商品详情

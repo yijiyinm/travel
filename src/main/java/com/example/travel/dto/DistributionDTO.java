@@ -37,4 +37,7 @@ public class DistributionDTO {
      * id
      */
     private Long id;
+
+    private Long size;
+    private Long current;
 }

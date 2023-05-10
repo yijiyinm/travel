@@ -2,8 +2,11 @@ package com.example.travel.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.travel.dao.entity.DistributionAuditDO;
 import com.example.travel.dto.AddProductDTO;
+import com.example.travel.dto.DistributionDTO;
 import com.example.travel.dto.ProductPriceDTO;
 import com.example.travel.dao.ProductMapper;
 import com.example.travel.dao.entity.ProductDO;
@@ -178,22 +181,33 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
     }
 
     @Override
-    public List<AddProductDTO> getProductList(String productName) {
-        List<ProductDO> productDOS = list(Wrappers.<ProductDO>lambdaQuery().like(StringUtils.isNotBlank(productName),ProductDO::getProductName, productName)
-                .ne(ProductDO::getStatus,OrderStatusEnum.DELETE_STATUS.getStatus())
-                .orderByDesc(ProductDO::getSequence,ProductDO::getCreateDate));
-        List<AddProductDTO> addProductDTOS = new ArrayList<>();
-        for (ProductDO productDO : productDOS) {
-            AddProductDTO addProductDTO = new AddProductDTO();
-            addProductDTO.setDescription(productDO.getDescription());
-            addProductDTO.setProductName(productDO.getProductName());
-            addProductDTO.setProductCode(productDO.getProductCode());
-            addProductDTO.setStatus(productDO.getStatus());
-            addProductDTO.setLabel(productDO.getLabel());
-            addProductDTO.setSequence(productDO.getSequence());
-            addProductDTOS.add(addProductDTO);
+    public Page<AddProductDTO> getProductList(AddProductDTO addProductDTO) {
+        try {
+            Page<ProductDO> page = new Page(addProductDTO.getCurrent(),addProductDTO.getSize());
+            Page<ProductDO> productDOPage = page(page,Wrappers.<ProductDO>lambdaQuery().like(StringUtils.isNotBlank(addProductDTO.getProductName()),ProductDO::getProductName, addProductDTO.getProductName())
+                    .ne(ProductDO::getStatus,OrderStatusEnum.DELETE_STATUS.getStatus())
+                    .orderByDesc(ProductDO::getSequence,ProductDO::getCreateDate));
+            List<ProductDO> productDOS = productDOPage.getRecords();
+            List<AddProductDTO> addProductDTOS = new ArrayList<>();
+            for (ProductDO productDO : productDOS) {
+                AddProductDTO addProductDTO1 = new AddProductDTO();
+                addProductDTO1.setDescription(productDO.getDescription());
+                addProductDTO1.setProductName(productDO.getProductName());
+                addProductDTO1.setProductCode(productDO.getProductCode());
+                addProductDTO1.setStatus(productDO.getStatus());
+                addProductDTO1.setLabel(productDO.getLabel());
+                addProductDTO1.setSequence(productDO.getSequence());
+                addProductDTOS.add(addProductDTO1);
+            }
+            Page<AddProductDTO> addProductDTOPage = new Page<>();
+            addProductDTOPage.setTotal(productDOPage.getTotal());
+            addProductDTOPage.setRecords(addProductDTOS);
+            return addProductDTOPage;
+        } catch (Exception e) {
+            log.error("商品分页查询异常:{}",e);
+            e.printStackTrace();
+            return null;
         }
-        return addProductDTOS;
     }
 
     @Override

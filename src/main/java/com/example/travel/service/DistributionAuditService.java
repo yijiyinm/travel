@@ -1,5 +1,6 @@
 package com.example.travel.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.travel.dto.DistributionDTO;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public interface DistributionAuditService {
      * @param distributionDTO
      * @return
      */
-    List<DistributionDTO> getDistributionList(DistributionDTO distributionDTO);
+    Page<DistributionDTO> getDistributionList(DistributionDTO distributionDTO);
 
     /**
      * 分销商审核

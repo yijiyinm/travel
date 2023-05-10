@@ -230,12 +230,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             Page<OrderDO> doPage = page(page,wrapper);
             Page<SelectOrderDTO> dtoPage = new Page<>();
             log.info("订单分页数据：{}",doPage.getTotal());
-            log.info("订单分页数据：{}",doPage.getSize());
-            log.info("订单分页数据：{}",doPage.getRecords());
 
 
 
-            dtoPage.setSize(doPage.getSize());
             dtoPage.setTotal(doPage.getTotal());
             dtoPage.setCurrent(doPage.getCurrent());
             List<SelectOrderDTO> selectOrderDTOS = new ArrayList<>();

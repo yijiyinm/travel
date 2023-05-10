@@ -1,5 +1,6 @@
 package com.example.travel.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.travel.aop.Authority;
 import com.example.travel.aop.AuthorityType;
 import com.example.travel.dto.AddProductDTO;
@@ -96,7 +97,7 @@ public class ProductController {
      */
     @PostMapping("getProductList")
     public BaseRespResult getProductList(@RequestBody AddProductDTO param) {
-        List<AddProductDTO> dtoList = productService.getProductList(param.getProductName());
+        Page<AddProductDTO> dtoList = productService.getProductList(param);
         return BaseRespResult.successResult(dtoList);
     }
 

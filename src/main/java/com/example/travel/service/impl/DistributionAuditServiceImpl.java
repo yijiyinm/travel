@@ -1,9 +1,11 @@
 package com.example.travel.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.travel.dao.DistributionAuditMapper;
 import com.example.travel.dao.entity.DistributionAuditDO;
+import com.example.travel.dao.entity.OrderDO;
 import com.example.travel.dto.DistributionDTO;
 import com.example.travel.enums.OrderStatusEnum;
 import com.example.travel.service.DistributionAuditService;
@@ -43,14 +45,18 @@ public class DistributionAuditServiceImpl extends ServiceImpl<DistributionAuditM
     }
 
     @Override
-    public List<DistributionDTO> getDistributionList(DistributionDTO distributionDTO) {
+    public Page<DistributionDTO> getDistributionList(DistributionDTO distributionDTO) {
         try {
-            List<DistributionAuditDO> auditDOList = list(Wrappers.<DistributionAuditDO>lambdaQuery()
+            Page<DistributionAuditDO> page = new Page(distributionDTO.getCurrent(),distributionDTO.getSize());
+            Page<DistributionAuditDO> auditDOPage = page(page,Wrappers.<DistributionAuditDO>lambdaQuery()
                     .eq(distributionDTO.getStatus()!=null,DistributionAuditDO::getStatus,distributionDTO.getStatus())
                     .like(distributionDTO.getPhone()!=null,DistributionAuditDO::getPhone,distributionDTO.getPhone())
                     .orderByDesc(DistributionAuditDO::getCreateDate));
+
+            List<DistributionAuditDO> distributionAuditDOS = auditDOPage.getRecords();
+
             List<DistributionDTO> distributionDTOS = new ArrayList<>();
-            for (DistributionAuditDO auditDO : auditDOList){
+            for (DistributionAuditDO auditDO : distributionAuditDOS){
                 DistributionDTO dto = new DistributionDTO();
                 dto.setPhone(auditDO.getPhone());
                 dto.setRemark(auditDO.getRemark());
@@ -59,7 +65,11 @@ public class DistributionAuditServiceImpl extends ServiceImpl<DistributionAuditM
                 dto.setId(auditDO.getId());
                 distributionDTOS.add(dto);
             }
-            return distributionDTOS;
+
+            Page<DistributionDTO> distributionDTOPage = new Page<>();
+            distributionDTOPage.setTotal(auditDOPage.getTotal());
+            distributionDTOPage.setRecords(distributionDTOS);
+            return distributionDTOPage;
         } catch (Exception e) {
             log.error("分销列表查询异常");
             e.printStackTrace();

@@ -63,4 +63,7 @@ public class AddProductDTO {
      * 展示顺序
      */
     private Integer sequence;
+
+    private Long size;
+    private Long current;
 }
