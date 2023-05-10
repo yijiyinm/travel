@@ -1,11 +1,14 @@
 package com.example.travel.controller;
 
+import com.example.travel.cache.CacheManager;
 import com.example.travel.dto.LoginParam;
 import com.example.travel.param.SelUserListParam;
 import com.example.travel.service.impl.UserService;
 import com.example.travel.util.BaseRespResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author yijiyin
@@ -50,9 +53,13 @@ public class UserController {
      * @return
      */
     @PostMapping("getUserInfo")
-    public BaseRespResult getUserInfo(@RequestBody SelUserListParam param) {
-        // todo 通过token 获取openId
-        return BaseRespResult.successResult(userService.getUserInfo(""));
+    public BaseRespResult getUserInfo(@RequestBody SelUserListParam param, HttpServletRequest request) {
+        // 通过token 获取openId
+        // 验证登录
+        String tokeninfo = request.getHeader("tokeninfo");
+
+        String openId = CacheManager.get(tokeninfo);
+        return BaseRespResult.successResult(userService.getUserInfo(openId));
     }
 
 }

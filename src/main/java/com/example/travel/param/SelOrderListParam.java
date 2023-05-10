@@ -1,9 +1,7 @@
 package com.example.travel.param;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-import java.util.Date;
 
 /**
  * @author yijiyin
@@ -41,7 +39,7 @@ public class SelOrderListParam {
     private String fxsCode;
 
     /**
-     * 月份
+     * 创建时间月份
      */
     private String month;
 }

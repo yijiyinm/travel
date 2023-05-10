@@ -60,6 +60,19 @@ public class OrderController {
     }
 
     /**
+     * 手动操作退款
+     * @return
+     */
+    @PostMapping("orderRefund")
+    public BaseRespResult orderRefund(@RequestBody SelOrderListParam param) {
+        Boolean ret = orderService.orderRefund(param.getOrderCode());
+        if (ret){
+            return BaseRespResult.successResult("退款成功");
+        }
+        return BaseRespResult.errorResult("退款失败");
+    }
+
+    /**
      * 小程序获取订单列表
      * @return
      */

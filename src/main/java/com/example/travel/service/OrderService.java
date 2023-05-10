@@ -48,10 +48,18 @@ public interface OrderService {
 
     /**
      * 小程序用户查询支付订单详情
-     * @param openId
+     * @param orderCode
      * @return
      */
     SelectOrderDTO getOrderDetailWX(String orderCode);
+
+
+    /**
+     * 退款
+     * @param orderCode
+     * @return
+     */
+    Boolean orderRefund(String orderCode);
 
 
 }

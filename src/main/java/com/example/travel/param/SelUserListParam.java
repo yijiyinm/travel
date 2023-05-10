@@ -15,4 +15,9 @@ public class SelUserListParam {
      * 是否分销商
      */
     private Boolean distributionIs;
+
+    /**
+     * 分销商手机号
+     */
+    private String phone;
 }

@@ -69,7 +69,7 @@ public class BaseRespResult<T> implements Serializable {
 
 
     public static BaseRespResult errorResult(String data) {
-        return errorResult("200", data);
+        return errorResult("500", data);
     }
 
     public static BaseRespResult errorResult(String code, String data) {

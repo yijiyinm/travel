@@ -44,9 +44,10 @@ public interface UserService {
      * 分销商编码存入
      * @param openId
      * @param fxsCode
+     * @param phone
      * @return
      */
-    void updateFXS(String openId,String fxsCode);
+    void updateFXS(String openId,String fxsCode,String phone);
 
     /**
      * 小程序用户获取基本信息

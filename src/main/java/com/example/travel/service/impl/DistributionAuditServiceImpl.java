@@ -47,7 +47,7 @@ public class DistributionAuditServiceImpl extends ServiceImpl<DistributionAuditM
         try {
             List<DistributionAuditDO> auditDOList = list(Wrappers.<DistributionAuditDO>lambdaQuery()
                     .eq(distributionDTO.getStatus()!=null,DistributionAuditDO::getStatus,distributionDTO.getStatus())
-                    .like(distributionDTO.getPhone()!=null,DistributionAuditDO::getPhone,distributionDTO.getRemark())
+                    .like(distributionDTO.getPhone()!=null,DistributionAuditDO::getPhone,distributionDTO.getPhone())
                     .orderByDesc(DistributionAuditDO::getCreateDate));
             List<DistributionDTO> distributionDTOS = new ArrayList<>();
             for (DistributionAuditDO auditDO : auditDOList){
@@ -72,9 +72,9 @@ public class DistributionAuditServiceImpl extends ServiceImpl<DistributionAuditM
         try {
             DistributionAuditDO distributionAuditDO = getById(id);
             if (OrderStatusEnum.ALREADY_PAY.getStatus().equals(status)){
-                // 生成分销商编号 存入小程序用户表内
+                // 生成分销商编号 将分销商手机号存入小程序用户表内
                 String code ="FXS"+GenerateCodeUtil.createCode(8);
-                userService.updateFXS(distributionAuditDO.getOpenId(),code);
+                userService.updateFXS(distributionAuditDO.getOpenId(),code,distributionAuditDO.getPhone());
             } else if (OrderStatusEnum.FAILURE_PAY.getStatus().equals(status)){
             } else {
                 log.error("审核状态错误");
