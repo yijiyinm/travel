@@ -3,6 +3,7 @@ package com.example.travel.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.travel.dao.entity.UserDO;
 import com.example.travel.dto.UserDTO;
+import com.example.travel.dto.WxUserDTO;
 import com.example.travel.param.SelUserListParam;
 
 /**
@@ -54,5 +55,12 @@ public interface UserService {
      * @param  openId
      * @return
      */
-    UserDTO getUserInfo(String openId);
+    WxUserDTO getUserInfo(String openId);
+
+    /**
+     * 根据分销商编码获取信息
+     * @param  fxsCode
+     * @return
+     */
+    UserDO getUserInfoByFxsCode(String fxsCode);
 }

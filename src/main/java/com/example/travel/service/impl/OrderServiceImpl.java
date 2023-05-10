@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.travel.dao.OrderMapper;
+import com.example.travel.dao.entity.UserDO;
 import com.example.travel.dto.CreateOrderDTO;
 import com.example.travel.dto.CreateOrderReturnDTO;
 import com.example.travel.dto.SelectOrderDTO;
@@ -48,6 +49,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     private ProductService productService;
     @Resource
     private TouristService touristService;
+    @Resource
+    private UserService userService;
 
     public static String merchantId = AppInfoEnum.MCH_ID.getValue();
     public static String privateKeyPath = "./apiclient_key.pem";
@@ -119,6 +122,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             orderDO.setTouristIds(touristIds);
             orderDO.setOpenId(openId);
             orderDO.setFxsCode(param.getFxsCode());
+            if (StringUtils.isNotEmpty(param.getFxsCode())) {
+                // 查询分销商手机号
+                UserDO userDO = userService.getUserInfoByFxsCode(param.getFxsCode());
+                if (userDO != null){
+                    orderDO.setFxsPhone(userDO.getPhone());
+                }
+            }
         } catch (Exception e) {
             log.error("订单创建错误");
             e.printStackTrace();
@@ -211,6 +221,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             LambdaQueryWrapper<OrderDO> wrapper = Wrappers.<OrderDO>lambdaQuery()
                     .eq(param.getDistributionIs()!=null,OrderDO::getDistributionIs,param.getDistributionIs())
                     .eq(StringUtils.isNotEmpty(param.getFxsCode()),OrderDO::getFxsCode,param.getFxsCode())
+                    .eq(StringUtils.isNotEmpty(param.getFxsPhone()),OrderDO::getFxsPhone,param.getFxsPhone())
                     .eq(param.getOrderStatus()!=null,OrderDO::getStatus,param.getOrderStatus())
                     .eq(StringUtils.isNotEmpty(param.getOrderCode()),OrderDO::getOrderCode,param.getOrderCode());
             if (StringUtils.isNotEmpty(param.getMonth())) {
@@ -244,6 +255,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
                 selectOrderDTO.setProductName(orderDO.getProductName());
                 selectOrderDTO.setOrderCode(orderDO.getOrderCode());
                 selectOrderDTO.setFxsCode(orderDO.getFxsCode());
+                selectOrderDTO.setFxsPhone(orderDO.getFxsPhone());
                 selectOrderDTO.setCreateDate(orderDO.getCreateDate());
                 selectOrderDTOS.add(selectOrderDTO);
             }

@@ -83,7 +83,7 @@ public class DistributionAuditServiceImpl extends ServiceImpl<DistributionAuditM
             DistributionAuditDO distributionAuditDO = getById(id);
             if (OrderStatusEnum.ALREADY_PAY.getStatus().equals(status)){
                 // 生成分销商编号 将分销商手机号存入小程序用户表内
-                String code ="FXS"+GenerateCodeUtil.createCode(8);
+                String code ="FX"+GenerateCodeUtil.createCode(3)+distributionAuditDO.getPhone();
                 userService.updateFXS(distributionAuditDO.getOpenId(),code,distributionAuditDO.getPhone());
             } else if (OrderStatusEnum.FAILURE_PAY.getStatus().equals(status)){
             } else {
@@ -98,5 +98,19 @@ public class DistributionAuditServiceImpl extends ServiceImpl<DistributionAuditM
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public DistributionDTO getListByOpenId(String openId) {
+
+        List<DistributionAuditDO> distributionAuditDOS = list(Wrappers.<DistributionAuditDO>lambdaQuery()
+                .eq(DistributionAuditDO::getOpenId,openId)
+                .orderByDesc(DistributionAuditDO::getCreateDate));
+        if (distributionAuditDOS != null && distributionAuditDOS.size() > 0) {
+            DistributionDTO dto = new DistributionDTO();
+            dto.setStatus(distributionAuditDOS.get(0).getStatus());
+            return dto;
+        }
+        return null;
     }
 }

@@ -39,6 +39,11 @@ public class SelOrderListParam {
     private String fxsCode;
 
     /**
+     * 分销手机号
+     */
+    private String fxsPhone;
+
+    /**
      * 创建时间月份
      */
     private String month;

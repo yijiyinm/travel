@@ -73,6 +73,11 @@ public class OrderDO extends Model<OrderDO> {
     private String fxsCode;
 
     /**
+     * 分销手机号
+     */
+    private String fxsPhone;
+
+    /**
      * 商户订单号
      */
     private String outTradeNo;

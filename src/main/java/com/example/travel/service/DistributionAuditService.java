@@ -32,4 +32,12 @@ public interface DistributionAuditService {
      * @return
      */
     Boolean distributionAudit(Long id,Integer status);
+
+
+    /**
+     * 查询申请信息
+     * @param openId
+     * @return
+     */
+    DistributionDTO getListByOpenId(String openId);
 }

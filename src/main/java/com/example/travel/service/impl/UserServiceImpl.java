@@ -10,8 +10,12 @@ import com.example.travel.cache.CacheManager;
 import com.example.travel.dao.UserMapper;
 import com.example.travel.dao.entity.OrderDO;
 import com.example.travel.dao.entity.UserDO;
+import com.example.travel.dto.DistributionDTO;
 import com.example.travel.dto.UserDTO;
+import com.example.travel.dto.WxUserDTO;
+import com.example.travel.enums.OrderStatusEnum;
 import com.example.travel.param.SelUserListParam;
+import com.example.travel.service.DistributionAuditService;
 import com.example.travel.util.AppInfoEnum;
 import com.example.travel.util.GenerateCodeUtil;
 import com.example.travel.util.HttpClientUtil;
@@ -19,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +37,8 @@ import java.util.List;
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements UserService {
     private static String loginUrl = "https://api.weixin.qq.com/sns/jscode2session";
 
+    @Resource
+    private DistributionAuditService distributionAuditService;
 
     @Override
     public Page<UserDTO> getUserPage(SelUserListParam param) {
@@ -127,14 +134,31 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     }
 
     @Override
-    public UserDTO getUserInfo(String openId) {
-        UserDTO userDTO = new UserDTO();
-        UserDO userDO = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getOpenId, openId));
-        if (StringUtils.isNotEmpty(userDO.getFxsCode())){
-            userDTO.setFxsCode(userDO.getFxsCode());
-            return userDTO;
+    public WxUserDTO getUserInfo(String openId) {
+        WxUserDTO wxUserDTO = new WxUserDTO();
+        // 分销商申请状态
+        DistributionDTO dto =  distributionAuditService.getListByOpenId(openId);
+        if (dto != null) {
+            wxUserDTO.setFxsRequestStatus(dto.getStatus());
+            if (OrderStatusEnum.ALREADY_PAY.getStatus().equals(dto.getStatus())){
+                UserDO userDO = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getOpenId, openId));
+                if (StringUtils.isNotEmpty(userDO.getFxsCode())){
+                    wxUserDTO.setFxsCode(userDO.getFxsCode());
+                }
+            }
+        } else {
+            wxUserDTO.setFxsRequestStatus(4);
         }
-        return null;
+
+        return wxUserDTO;
+    }
+
+    @Override
+    public UserDO getUserInfoByFxsCode(String fxsCode) {
+
+        UserDO one = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getFxsCode, fxsCode));
+        log.info("one {}",JSON.toJSONString(one));
+        return one;
     }
 
     @Override
