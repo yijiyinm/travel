@@ -135,10 +135,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
                 for (ProductPriceDTO priceDTO : addProductDTO.getPriceDTOS()){
                     ProductPriceDO priceDO = new ProductPriceDO();
                     priceDO.setProductCode(productDO.getProductCode());
+                    log.info("商品价格日期：{}",priceDTO.getDayDate());
                     priceDO.setDayDate(priceDTO.getDayDate());
                     priceDO.setPrice(priceDTO.getPrice());
                     priceDO.setPriceCr(priceDTO.getPriceCr());
                     priceDO.setPriceEt(priceDTO.getPriceEt());
+                    log.info("修改的商品价格信息:{}"+priceDO);
                     priceDO.insert();
                 }
             }
@@ -165,17 +167,21 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
 
     @Override
     public boolean deleteProduct(String productCode) {
-        log.info("");
+        log.info("删除商品编码:{}",productCode);
         ProductDO productDO = getOne(Wrappers.<ProductDO>lambdaQuery().eq(ProductDO::getProductCode, productCode));
         if (productDO != null && (OrderStatusEnum.FAILURE_PAY.getStatus().equals(productDO.getStatus())||OrderStatusEnum.WAIT_PAY.getStatus().equals(productDO.getStatus()))){
-            return productDO.deleteById();
+            productDO.setStatus(OrderStatusEnum.DELETE_STATUS.getStatus());
+            log.info("删除商品编码信息：{}",productDO);
+            return productDO.updateById();
         }
         return false;
     }
 
     @Override
     public List<AddProductDTO> getProductList(String productName) {
-        List<ProductDO> productDOS = list(Wrappers.<ProductDO>lambdaQuery().like(StringUtils.isNotBlank(productName),ProductDO::getProductName, productName).orderByDesc(ProductDO::getSequence,ProductDO::getCreateDate));
+        List<ProductDO> productDOS = list(Wrappers.<ProductDO>lambdaQuery().like(StringUtils.isNotBlank(productName),ProductDO::getProductName, productName)
+                .ne(ProductDO::getStatus,OrderStatusEnum.DELETE_STATUS.getStatus())
+                .orderByDesc(ProductDO::getSequence,ProductDO::getCreateDate));
         List<AddProductDTO> addProductDTOS = new ArrayList<>();
         for (ProductDO productDO : productDOS) {
             AddProductDTO addProductDTO = new AddProductDTO();
@@ -244,7 +250,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
 
     @Override
     public List<AddProductDTO> getProductListWX(String label) {
-        List<ProductDO> productDOS = list(Wrappers.<ProductDO>lambdaQuery().eq(ProductDO::getLabel, label).eq(ProductDO::getStatus,2).orderByAsc(ProductDO::getSequence));
+        List<ProductDO> productDOS = list(Wrappers.<ProductDO>lambdaQuery().eq(ProductDO::getLabel, label).eq(ProductDO::getStatus,OrderStatusEnum.ALREADY_PAY.getStatus()).orderByAsc(ProductDO::getSequence));
         List<AddProductDTO> addProductDTOS = new ArrayList<>();
         for (ProductDO productDO : productDOS) {
             AddProductDTO addProductDTO = new AddProductDTO();

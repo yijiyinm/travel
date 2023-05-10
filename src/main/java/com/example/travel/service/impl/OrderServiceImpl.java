@@ -1,6 +1,7 @@
 package com.example.travel.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -205,45 +206,57 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
 
     @Override
     public Page<SelectOrderDTO> getOrderList(SelOrderListParam param) {
-        Page<OrderDO> page = new Page(param.getCurrent(),param.getSize());
-        LambdaQueryWrapper<OrderDO> wrapper = Wrappers.<OrderDO>lambdaQuery()
-                .eq(param.getDistributionIs()!=null,OrderDO::getDistributionIs,param.getDistributionIs())
-                .eq(param.getFxsCode() != null,OrderDO::getFxsCode,param.getFxsCode())
-                .eq(param.getOrderStatus()!=null,OrderDO::getStatus,param.getOrderStatus());
-                //.between();
-        Page<OrderDO> doPage = page(page,wrapper);
-        Page<SelectOrderDTO> dtoPage = new Page<>();
-        log.info("订单分页数据：{}",doPage.getTotal());
-        log.info("订单分页数据：{}",doPage.getSize());
-        log.info("订单分页数据：{}",doPage.getRecords());
+        try {
+            Page<OrderDO> page = new Page(param.getCurrent(),param.getSize());
+            LambdaQueryWrapper<OrderDO> wrapper = Wrappers.<OrderDO>lambdaQuery()
+                    .eq(param.getDistributionIs()!=null,OrderDO::getDistributionIs,param.getDistributionIs())
+                    .eq(StringUtils.isNotEmpty(param.getFxsCode()),OrderDO::getFxsCode,param.getFxsCode())
+                    .eq(param.getOrderStatus()!=null,OrderDO::getStatus,param.getOrderStatus())
+                    .eq(StringUtils.isNotEmpty(param.getOrderCode()),OrderDO::getOrderCode,param.getOrderCode());
+            if (StringUtils.isNotEmpty(param.getMonth())) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = sdf.parse(param.getMonth()+"-01");
+                Calendar calendar = new GregorianCalendar();
+                calendar.setTime(date);
+                calendar.set(Calendar.DAY_OF_MONTH,1);
+                String firstDay = sdf.format(calendar.getTime());
+                log.info("第一天:"+firstDay);
+                calendar.set(Calendar.DAY_OF_MONTH,calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+                String lastDay = sdf.format(calendar.getTime());
+                log.info("最后一天："+lastDay);
+                wrapper.between(OrderDO::getCreateDate,firstDay+" 00:00:00",lastDay+" 23:59:59");
+            }
+            //.between();
+            Page<OrderDO> doPage = page(page,wrapper);
+            Page<SelectOrderDTO> dtoPage = new Page<>();
+            log.info("订单分页数据：{}",doPage.getTotal());
+            log.info("订单分页数据：{}",doPage.getSize());
+            log.info("订单分页数据：{}",doPage.getRecords());
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = new Date();
-        Calendar calendar = new GregorianCalendar();
-        calendar.setTime(date);
-        calendar.set(Calendar.DAY_OF_MONTH,1);
-        String firstDay = sdf.format(calendar.getTime());
-        System.out.println("第一天:"+firstDay);
-        calendar.set(Calendar.DAY_OF_MONTH,calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-        String lastDay = sdf.format(calendar.getTime());
-        System.out.println("最后一天："+lastDay);
 
-        dtoPage.setSize(doPage.getSize());
-        dtoPage.setTotal(doPage.getTotal());
-        dtoPage.setCurrent(doPage.getCurrent());
-        List<SelectOrderDTO> selectOrderDTOS = new ArrayList<>();
-        for (OrderDO orderDO :doPage.getRecords()){
-            SelectOrderDTO selectOrderDTO = new SelectOrderDTO();
-            selectOrderDTO.setOrderStatus(orderDO.getStatus());
-            selectOrderDTO.setPayPrice(orderDO.getPrice());
-            selectOrderDTO.setNum(orderDO.getNum());
-            selectOrderDTO.setProductName(orderDO.getProductName());
-            selectOrderDTO.setOrderCode(orderDO.getOrderCode());
-            selectOrderDTO.setFxsCode(orderDO.getFxsCode());
-            selectOrderDTOS.add(selectOrderDTO);
+
+            dtoPage.setSize(doPage.getSize());
+            dtoPage.setTotal(doPage.getTotal());
+            dtoPage.setCurrent(doPage.getCurrent());
+            List<SelectOrderDTO> selectOrderDTOS = new ArrayList<>();
+            for (OrderDO orderDO :doPage.getRecords()){
+                SelectOrderDTO selectOrderDTO = new SelectOrderDTO();
+                selectOrderDTO.setOrderStatus(orderDO.getStatus());
+                selectOrderDTO.setPayPrice(orderDO.getPrice());
+                selectOrderDTO.setNum(orderDO.getNum());
+                selectOrderDTO.setProductName(orderDO.getProductName());
+                selectOrderDTO.setOrderCode(orderDO.getOrderCode());
+                selectOrderDTO.setFxsCode(orderDO.getFxsCode());
+                selectOrderDTO.setCreateDate(orderDO.getCreateDate());
+                selectOrderDTOS.add(selectOrderDTO);
+            }
+            dtoPage.setRecords(selectOrderDTOS);
+            return dtoPage;
+        } catch (Exception e) {
+            log.error("查询订单列表异常:{}",e);
+            e.printStackTrace();
         }
-        dtoPage.setRecords(selectOrderDTOS);
-        return dtoPage;
+        return null;
     }
 
     @Override
@@ -272,6 +285,24 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
 
         }
         return null;
+    }
+
+    @Override
+    public Boolean orderRefund(String orderCode) {
+        try {
+            OrderDO orderDO = getOne(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getOrderCode, orderCode));
+            if (OrderStatusEnum.ALREADY_PAY.getStatus().equals(orderDO.getStatus())){
+                orderDO.setStatus(OrderStatusEnum.DELETE_STATUS.getStatus());
+                return orderDO.updateById();
+            } else {
+                log.info("只有支付完成订单才能退款！");
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("退款异常：{}",e);
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**

@@ -38,7 +38,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         Page<UserDTO> pageDTO = new Page(param.getCurrent(),param.getSize());
 
         Page<UserDO> page = new Page(param.getCurrent(),param.getSize());
-        LambdaQueryWrapper<UserDO> wrapper = Wrappers.lambdaQuery();
+        LambdaQueryWrapper<UserDO> wrapper = Wrappers.<UserDO>lambdaQuery()
+                .like(StringUtils.isNotEmpty(param.getPhone()),UserDO::getPhone,param.getPhone());
 
         if (param.getDistributionIs() != null){
             if (param.getDistributionIs()){
@@ -121,8 +122,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     }
 
     @Override
-    public void updateFXS(String openId, String fxsCode) {
-        baseMapper.updateFXS(openId,fxsCode);
+    public void updateFXS(String openId, String fxsCode,String phone) {
+        baseMapper.updateFXS(openId,fxsCode,phone);
     }
 
     @Override
@@ -131,6 +132,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         UserDO userDO = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getOpenId, openId));
         if (StringUtils.isNotEmpty(userDO.getFxsCode())){
             userDTO.setFxsCode(userDO.getFxsCode());
+            return userDTO;
         }
         return null;
     }
