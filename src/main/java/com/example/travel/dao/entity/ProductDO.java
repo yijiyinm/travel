@@ -27,6 +27,11 @@ public class ProductDO extends Model<ProductDO> {
     private String label;
 
     /**
+     * 月销售
+     */
+    private Integer monthSalesNum;
+
+    /**
      * 展示顺序
      */
     private Integer sequence;

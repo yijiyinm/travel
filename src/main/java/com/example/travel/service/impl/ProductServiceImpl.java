@@ -59,6 +59,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             productDO.setLabel(addProductDTO.getLabel());
             productDO.setSequence(addProductDTO.getSequence());
             productDO.setMainUrl(addProductDTO.getMainUrl());
+            productDO.setMonthSalesNum(addProductDTO.getMonthSalesNum());
             productDO.insert();
 
             // 图片信息存储
@@ -108,6 +109,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             productDO.setLabel(addProductDTO.getLabel());
             productDO.setSequence(addProductDTO.getSequence());
             productDO.setMainUrl(addProductDTO.getMainUrl());
+            productDO.setMonthSalesNum(addProductDTO.getMonthSalesNum());
             productDO.updateById();
 
             // 删除之前的照片 重新保存
@@ -197,6 +199,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
                 addProductDTO1.setStatus(productDO.getStatus());
                 addProductDTO1.setLabel(productDO.getLabel());
                 addProductDTO1.setSequence(productDO.getSequence());
+                addProductDTO1.setMonthSalesNum(productDO.getMonthSalesNum());
                 addProductDTOS.add(addProductDTO1);
             }
             Page<AddProductDTO> addProductDTOPage = new Page<>();
@@ -221,6 +224,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
         addProductDTO.setSequence(productDO.getSequence());
         addProductDTO.setMainUrl(productDO.getMainUrl());
         addProductDTO.setStatus(productDO.getStatus());
+        addProductDTO.setMonthSalesNum(productDO.getMonthSalesNum());
 
         // 价格信息
         List<ProductPriceDTO> productPriceDTOS = new ArrayList<>();
@@ -274,6 +278,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             addProductDTO.setLabel(productDO.getLabel());
             addProductDTO.setMainUrl(productDO.getMainUrl());
             addProductDTO.setSequence(productDO.getSequence());
+            addProductDTO.setMonthSalesNum(productDO.getMonthSalesNum());
             // 价格信息
 
             // 今天的日期
