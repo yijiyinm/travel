@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author yijiyin
@@ -44,6 +46,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
     private ProductImgService productImgService;
     @Autowired
     private ProductPriceService productPriceService;
+    private static Pattern pattern = Pattern.compile("[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领]{1}[A-Z]{1}[A-Z0-9]{5,6}");
+
 
     @Override
     public boolean addProduct(AddProductDTO addProductDTO) {
@@ -350,5 +354,16 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void main(String[] args) {
+        List<String> carList = new ArrayList<>();
+        // 车牌号截取
+        Matcher matcher = pattern.matcher("车牌测试截取沪A8F241，车牌二浙A01160");
+        StringBuilder bf = new StringBuilder();
+        while (matcher.find()) {
+            carList.add(matcher.group());
+        }
+        System.out.println(carList);
     }
 }

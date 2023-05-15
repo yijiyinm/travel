@@ -59,6 +59,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     // public static String wechatPayCertificatePath = "src/main/resources/apiclient_cert.pem";
     public static JsapiServiceExtension jsapiServiceExtension;
 
+//    Config config = new RSAAutoCertificateConfig.Builder()
+//            .merchantId(merchantId)
+//            .privateKeyFromPath(privateKeyPath)
+//            .merchantSerialNumber(merchantSerialNumber)
+//            .apiV3Key(apiV3Key)
+//            .build();
+
+    Config config = new RSAAutoCertificateConfig.Builder()
+            .merchantId(merchantId)
+            .privateKeyFromPath("./apiclient_key.pem")
+            .merchantSerialNumber(merchantSerialNumber)
+            .apiV3Key("18099980588188099809932233566607")
+            .build();
+
 
 
     @Override
@@ -69,12 +83,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
         PrepayWithRequestPaymentResponse paymentResponse=null;
         try {
               String outTradeNo = "OTN"+GenerateCodeUtil.createCode(10);
-            Config config = new RSAAutoCertificateConfig.Builder()
-                    .merchantId(merchantId)
-                    .privateKeyFromPath(privateKeyPath)
-                    .merchantSerialNumber(merchantSerialNumber)
-                    .apiV3Key(apiV3Key)
-                    .build();
+
 
             // 初始化服务
             jsapiServiceExtension =
@@ -130,7 +139,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
                 }
             }
         } catch (Exception e) {
-            log.error("订单创建错误");
+            log.error("订单创建错误:{}",e);
             e.printStackTrace();
             return null;
         }
@@ -223,7 +232,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
                     .eq(StringUtils.isNotEmpty(param.getFxsCode()),OrderDO::getFxsCode,param.getFxsCode())
                     .eq(StringUtils.isNotEmpty(param.getFxsPhone()),OrderDO::getFxsPhone,param.getFxsPhone())
                     .eq(param.getOrderStatus()!=null,OrderDO::getStatus,param.getOrderStatus())
-                    .eq(StringUtils.isNotEmpty(param.getOrderCode()),OrderDO::getOrderCode,param.getOrderCode());
+                    .eq(StringUtils.isNotEmpty(param.getOrderCode()),OrderDO::getOrderCode,param.getOrderCode()).orderByDesc(OrderDO::getCreateDate);
             if (StringUtils.isNotEmpty(param.getMonth())) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 Date date = sdf.parse(param.getMonth()+"-01");
