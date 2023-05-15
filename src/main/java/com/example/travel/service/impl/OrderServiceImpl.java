@@ -29,6 +29,7 @@ import com.wechat.pay.java.service.partnerpayments.jsapi.model.Transaction;
 import com.wechat.pay.java.service.payments.jsapi.JsapiServiceExtension;
 import com.wechat.pay.java.service.payments.jsapi.model.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -51,27 +52,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     private TouristService touristService;
     @Resource
     private UserService userService;
+    @Autowired
+    private RSAAutoCertificateConfig rsaAutoCertificateConfig;
 
     public static String merchantId = AppInfoEnum.MCH_ID.getValue();
-    public static String privateKeyPath = "./apiclient_key.pem";
-    public static String apiV3Key = "18099980588188099809932233566607";
-    public static String merchantSerialNumber = AppInfoEnum.MERCHANT_SERIAL_NUMBER.getValue();
     // public static String wechatPayCertificatePath = "src/main/resources/apiclient_cert.pem";
     public static JsapiServiceExtension jsapiServiceExtension;
 
-//    Config config = new RSAAutoCertificateConfig.Builder()
-//            .merchantId(merchantId)
-//            .privateKeyFromPath(privateKeyPath)
-//            .merchantSerialNumber(merchantSerialNumber)
-//            .apiV3Key(apiV3Key)
-//            .build();
-
-    Config config = new RSAAutoCertificateConfig.Builder()
-            .merchantId(merchantId)
-            .privateKeyFromPath("./apiclient_key.pem")
-            .merchantSerialNumber(merchantSerialNumber)
-            .apiV3Key("18099980588188099809932233566607")
-            .build();
 
 
 
@@ -88,7 +75,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             // 初始化服务
             jsapiServiceExtension =
                     new JsapiServiceExtension.Builder()
-                            .config(config)
+                            .config(rsaAutoCertificateConfig)
                             .signType("RSA")
                             .build();
 
@@ -330,12 +317,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     private Transaction getWxNotifyParamMap(HttpServletRequest request) {
 
         try {
-            Config config = new RSAAutoCertificateConfig.Builder()
-                    .merchantId(merchantId)
-                    .privateKeyFromPath(privateKeyPath)
-                    .merchantSerialNumber(merchantSerialNumber)
-                    .apiV3Key(apiV3Key)
-                    .build();
             BufferedReader br = request.getReader();
             String str  = "";
             String wholeStr = "";
@@ -356,7 +337,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             // 如果已经初始化了 RSAAutoCertificateConfig，可直接使用
 
             // 初始化 NotificationParser
-            NotificationParser parser = new NotificationParser((NotificationConfig) config);
+            NotificationParser parser = new NotificationParser((NotificationConfig) rsaAutoCertificateConfig);
 
             log.info("body信息：{}",wholeStr);
             // 以支付通知回调为例，验签、解密并转换成 Transaction

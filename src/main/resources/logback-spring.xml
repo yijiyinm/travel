@@ -1,47 +1,41 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <contextName>logback-spring-demo-dev</contextName>
-    <property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg %n"/>
-    <property name="pattern-color" value="%yellow(%d{yyyy-MM-dd HH:mm:ss.SSS}) [%thread] %highlight(%-5level) %green(%logger{50}) - %highlight(%msg) %n"/>
-    <property name="LOG_HOME" value="logs"/>
+    <property name="log.layout.pattern.default" value="[%date{yyyy-MM-dd HH:mm:ss.SSS}] [%level] [%thread] [%logger{50}] %msg%n"/>
+    <property name="log.level" value="INFO"/>
+    <property name="log.file.path" value="logs"/>
+    <property name="log.encoder" value="UTF-8"/>
+    <property name="log.max.history" value="30"/>
+    <property name="log.max.file.size" value="100MB"/>
 
-    <!-- 控制台输出 -->
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>${pattern}</pattern>
-        </encoder>
-    </appender>
-
-    <!-- 控制台输出-带颜色 -->
-    <appender name="CONSOLE-WITH-COLOR" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>${pattern-color}</pattern>
-        </encoder>
-    </appender>
-
-    <!-- 文件输出 -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_HOME}/all.%d.%i.log</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>10MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-            <maxHistory>30</maxHistory>
-        </rollingPolicy>
-
+    <appender name="consoleLog" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>${log.level}</level>
+        </filter>
         <encoder>
-            <pattern>${pattern}</pattern>
+            <Pattern>${log.layout.pattern.default}</Pattern>
+            <charset>${log.encoder}</charset>
         </encoder>
     </appender>
 
+    <appender name="fileLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.file.path}/console_%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <maxFileSize>${log.max.file.size}</maxFileSize>
+            <maxHistory>${log.max.history}</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>${log.level}</level>
+        </filter>
+        <encoder>
+            <pattern>${log.layout.pattern.default}</pattern>
+            <charset>${log.encoder}</charset>
+        </encoder>
+    </appender>
 
-    <root level="INFO">
-        <appender-ref ref="CONSOLE-WITH-COLOR"/>
-        <appender-ref ref="FILE"/>
+    <root>
+        <level value="${log.level}"/>
+        <appender-ref ref="consoleLog"/>
+        <appender-ref ref="fileLog"/>
     </root>
-
-    <logger name="com.example.logbackdemo.IndexAction" level="info" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
 
 </configuration>
