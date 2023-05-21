@@ -83,6 +83,11 @@ public class OrderDO extends Model<OrderDO> {
     private String outTradeNo;
 
     /**
+     * 出行时间
+     */
+    private String chuXingDate;
+
+    /**
      * 支付下单返回信息-小程序调起支付用
      */
     private String prePayId;

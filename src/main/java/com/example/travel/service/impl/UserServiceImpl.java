@@ -35,7 +35,7 @@ import java.util.List;
 @Slf4j
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements UserService {
-    private static String loginUrl = "https://api.weixin.qq.com/sns/jscode2session";
+    private static final String loginUrl = "https://api.weixin.qq.com/sns/jscode2session";
 
     @Resource
     private DistributionAuditService distributionAuditService;
@@ -116,7 +116,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     public String login(String userName, String userPassword) {
         log.info("登录信息：{}",userName);
         // 验证后台用户名密码 返回token
-        UserDO userDO = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getPhone, userName));
+        UserDO userDO = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getUnionId, userName));
         if (userDO != null) {
             if (userPassword.equals(userDO.getPassword())) {
                 String token = GenerateCodeUtil.createCode(20);

@@ -53,6 +53,11 @@ public class SelectOrderDTO {
     private String fxsPhone;
 
     /**
+     * 出行时间
+     */
+    private String chuXingDate;
+
+    /**
      * 订单创建时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

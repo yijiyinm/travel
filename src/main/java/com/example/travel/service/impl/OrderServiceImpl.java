@@ -64,7 +64,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
 
     @Override
     public CreateOrderReturnDTO createOrder(CreateOrderDTO param,String openId){
-
+        log.info("创建订单入参:{}",param);
         OrderDO orderDO = new OrderDO();
         String orderCode = "DD"+GenerateCodeUtil.createCode(18);
         PrepayWithRequestPaymentResponse paymentResponse=null;
@@ -106,6 +106,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             orderDO.setStatus(OrderStatusEnum.WAIT_PAY.getStatus());
             orderDO.setOutTradeNo(outTradeNo);
             orderDO.setPrePayId(paymentResponse.getPackageVal());
+            orderDO.setChuXingDate(param.getChuXingDate());
             //orderDO.setPrePayId("cspayId");
             String touristIds = "";
             for (int i=0;i<param.getTouristIds().size(); i++) {
@@ -199,6 +200,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
                 AddProductDTO addProductDTO = productService.getProductDetail(orderDO.getProductCode());
                 selectOrderDTO.setMainUrl(addProductDTO.getMainUrl());
                 selectOrderDTO.setDescription(addProductDTO.getDescription());
+                selectOrderDTO.setChuXingDate(orderDO.getChuXingDate());
                 selectOrderDTOS.add(selectOrderDTO);
             }
             return selectOrderDTOS;
@@ -253,6 +255,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
                 selectOrderDTO.setFxsCode(orderDO.getFxsCode());
                 selectOrderDTO.setFxsPhone(orderDO.getFxsPhone());
                 selectOrderDTO.setCreateDate(orderDO.getCreateDate());
+                selectOrderDTO.setChuXingDate(orderDO.getChuXingDate());
                 selectOrderDTOS.add(selectOrderDTO);
             }
             dtoPage.setRecords(selectOrderDTOS);
@@ -272,6 +275,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             selectOrderDTO.setPayPrice(orderDO.getPrice());
             selectOrderDTO.setOrderStatus(orderDO.getStatus());
             selectOrderDTO.setNum(orderDO.getNum());
+            selectOrderDTO.setChuXingDate(orderDO.getChuXingDate());
             // 产品信息
             AddProductDTO addProductDTO = productService.getProductDetail(orderDO.getProductCode());
             selectOrderDTO.setProductInfo(addProductDTO);
@@ -337,7 +341,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             // 如果已经初始化了 RSAAutoCertificateConfig，可直接使用
 
             // 初始化 NotificationParser
-            NotificationParser parser = new NotificationParser((NotificationConfig) rsaAutoCertificateConfig);
+            NotificationParser parser = new NotificationParser(rsaAutoCertificateConfig);
 
             log.info("body信息：{}",wholeStr);
             // 以支付通知回调为例，验签、解密并转换成 Transaction

@@ -8,7 +8,8 @@ export JRE_HOME=${JAVA_HOME}/jre
 # 应用存放地址（此处需要修改）
 APP_HOME=/data
 # 应用名称
-APP_NAME=$1
+#APP_NAME=$1
+APP_NAME=travel.jar
 
 # Shell Info
 
@@ -38,7 +39,8 @@ start(){
         if [ $? -eq "0" ]; then
                 echo "${APP_NAME} is already running, PID=${PID}"
         else
-                nohup ${JRE_HOME}/bin/java -jar ${APP_HOME}/${APP_NAME} >/dev/null 2>&1 &
+                nohup java -jar ${APP_HOME}/${APP_NAME} --spring.profiles.active=pro >/dev/null 2>&1 &
+
                 PID=$(echo $!)
                 echo "${APP_NAME} start success, PID=$!"
         fi
@@ -70,7 +72,7 @@ status(){
         fi
 }
 
-case $2 in
+case $1 in
 "start")
         stop
         start
@@ -84,8 +86,9 @@ case $2 in
 "status")
        status
         ;;
-        *)
-        usage
+*)
+    stop
+    start
         ;;
 esac
 exit 0

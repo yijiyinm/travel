@@ -44,6 +44,11 @@ public class CreateOrderDTO {
      */
     private String fxsCode;
 
+    /**
+     * 出行时间
+     */
+    private String chuXingDate;
+
 
     /**
      * 游客信息

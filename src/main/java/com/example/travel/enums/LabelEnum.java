@@ -13,10 +13,10 @@ public enum LabelEnum {
     zjgl(5,"自家攻略"),
     ;
 
-    private Integer dex;
-    private String name;
+    private final Integer dex;
+    private final String name;
 
-    private LabelEnum(Integer dex,String name) {
+    LabelEnum(Integer dex, String name) {
         this.dex = dex;
         this.name=name;
     }

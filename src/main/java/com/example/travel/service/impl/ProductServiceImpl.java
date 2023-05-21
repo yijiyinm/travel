@@ -46,7 +46,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
     private ProductImgService productImgService;
     @Autowired
     private ProductPriceService productPriceService;
-    private static Pattern pattern = Pattern.compile("[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领]{1}[A-Z]{1}[A-Z0-9]{5,6}");
+    private static final Pattern pattern = Pattern.compile("[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领]{1}[A-Z]{1}[A-Z0-9]{5,6}");
 
 
     @Override

@@ -27,7 +27,7 @@ import java.util.List;
 public class DistributionAuditController {
 
     @Autowired
-    private DistributionAuditService distributionAuditService;;
+    private DistributionAuditService distributionAuditService;
 
     /**
      * 分销商申请

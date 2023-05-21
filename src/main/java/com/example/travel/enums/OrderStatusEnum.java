@@ -11,10 +11,10 @@ public enum OrderStatusEnum {
     FAILURE_PAY(3,"支付失败,审核不通过,下架"),
     DELETE_STATUS(4,"已退款,删除");
 
-    private Integer status;
-    private String desc;
+    private final Integer status;
+    private final String desc;
 
-    private OrderStatusEnum(Integer status,String desc) {
+    OrderStatusEnum(Integer status, String desc) {
         this.status = status;
         this.desc=desc;
     }

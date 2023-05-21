@@ -12,10 +12,10 @@ public enum AppInfoEnum {
     MERCHANT_SERIAL_NUMBER("39160C3B15E22A1444C9B8B6D10C33D2395CBD23","商户证书编号"),
     API_V3_KEY("18099980588188099809932233566607","apiV3Key");
 
-    private String value;
-    private String desc;
+    private final String value;
+    private final String desc;
 
-    private AppInfoEnum(String value,String desc) {
+    AppInfoEnum(String value, String desc) {
         this.value = value;
         this.desc=desc;
     }
