@@ -20,9 +20,7 @@ import com.example.travel.dto.AddProductDTO;
 import com.example.travel.service.ProductService;
 import com.example.travel.util.AppInfoEnum;
 import com.example.travel.util.GenerateCodeUtil;
-import com.wechat.pay.java.core.Config;
 import com.wechat.pay.java.core.RSAAutoCertificateConfig;
-import com.wechat.pay.java.core.notification.NotificationConfig;
 import com.wechat.pay.java.core.notification.NotificationParser;
 import com.wechat.pay.java.core.notification.RequestParam;
 import com.wechat.pay.java.service.partnerpayments.jsapi.model.Transaction;
@@ -211,6 +209,36 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
         return null;
     }
 
+    @Override
+    public List<SelectOrderDTO> getFxsOrderListWX(String fxsCode) {
+        log.info("小程序获取分销商订单分销商fxsCode:{}"+fxsCode);
+        try {
+            List<SelectOrderDTO> selectOrderDTOS = new ArrayList<>();
+            List<OrderDO> orderDOS = list(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getFxsCode, fxsCode).ne(OrderDO::getStatus,1).orderByDesc(OrderDO::getCreateDate));
+            //List<OrderDO> orderDOS = list(Wrappers.<OrderDO>lambdaQuery().orderByDesc(OrderDO::getCreateDate));
+            for (OrderDO orderDO : orderDOS){
+                SelectOrderDTO selectOrderDTO = new SelectOrderDTO();
+                selectOrderDTO.setProductName(orderDO.getProductName());
+                selectOrderDTO.setPayPrice(orderDO.getPrice());
+                selectOrderDTO.setOrderStatus(orderDO.getStatus());
+                selectOrderDTO.setOrderCode(orderDO.getOrderCode());
+                selectOrderDTO.setNum(orderDO.getNum());
+                selectOrderDTO.setCreateDate(orderDO.getCreateDate());
+                // 产品信息
+                AddProductDTO addProductDTO = productService.getProductDetail(orderDO.getProductCode());
+                selectOrderDTO.setMainUrl(addProductDTO.getMainUrl());
+                selectOrderDTO.setDescription(addProductDTO.getDescription());
+                selectOrderDTO.setChuXingDate(orderDO.getChuXingDate());
+                selectOrderDTOS.add(selectOrderDTO);
+            }
+            return selectOrderDTOS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("小程序获取分销商订单列表失败");
+        }
+        return null;
+    }
+
 
     @Override
     public Page<SelectOrderDTO> getOrderList(SelOrderListParam param) {
@@ -256,6 +284,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
                 selectOrderDTO.setFxsPhone(orderDO.getFxsPhone());
                 selectOrderDTO.setCreateDate(orderDO.getCreateDate());
                 selectOrderDTO.setChuXingDate(orderDO.getChuXingDate());
+                selectOrderDTO.setRefundAmount(orderDO.getRefundAmount());
                 selectOrderDTOS.add(selectOrderDTO);
             }
             dtoPage.setRecords(selectOrderDTOS);
@@ -276,6 +305,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             selectOrderDTO.setOrderStatus(orderDO.getStatus());
             selectOrderDTO.setNum(orderDO.getNum());
             selectOrderDTO.setChuXingDate(orderDO.getChuXingDate());
+            selectOrderDTO.setRefundAmount(orderDO.getRefundAmount());
             // 产品信息
             AddProductDTO addProductDTO = productService.getProductDetail(orderDO.getProductCode());
             selectOrderDTO.setProductInfo(addProductDTO);
@@ -288,7 +318,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             }
             selectOrderDTO.setTouristInfo(touristDTOS);
             return selectOrderDTO;
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             log.error("查询订单详情错误");
             e.printStackTrace();
 
@@ -297,11 +327,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     }
 
     @Override
-    public Boolean orderRefund(String orderCode) {
+    public Boolean orderRefund(String orderCode,BigDecimal refundAmount) {
         try {
             OrderDO orderDO = getOne(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getOrderCode, orderCode));
             if (OrderStatusEnum.ALREADY_PAY.getStatus().equals(orderDO.getStatus())){
                 orderDO.setStatus(OrderStatusEnum.DELETE_STATUS.getStatus());
+                orderDO.setRefundAmount(refundAmount);
                 return orderDO.updateById();
             } else {
                 log.info("只有支付完成订单才能退款！");
@@ -312,6 +343,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public Integer getDaySumByProductCode(String productCode, Date dayDate) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String dateStr = sdf.format(dayDate);
+        Integer num = baseMapper.getDaySumByProductCode(productCode,dateStr);
+        if (num == null)  {
+            return 0;
+        }
+        return num;
     }
 
     /**

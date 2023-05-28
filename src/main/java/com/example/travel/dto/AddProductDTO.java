@@ -67,7 +67,7 @@ public class AddProductDTO {
     /**
      * 月销售数量
      */
-    private Integer  monthSalesNum;
+    private Integer monthSalesNum;
 
     private Long size;
     private Long current;

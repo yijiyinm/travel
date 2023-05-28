@@ -44,6 +44,11 @@ public class ProductPriceDO extends Model<ProductPriceDO> {
     private BigDecimal priceEt;
 
     /**
+     * 库存
+     */
+    private Integer inventory;
+
+    /**
      * 价格日期
      */
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")

@@ -37,7 +37,8 @@ public class TouristServiceImpl extends ServiceImpl<TouristMapper,TouristDO> imp
     public List<TouristDTO> getTouristList(String openId) {
         try {
             List<TouristDTO> touristDTOS = new ArrayList<>();
-            List<TouristDO> touristDOS = list(Wrappers.<TouristDO>lambdaQuery().eq(TouristDO::getOpenId, openId));
+            List<TouristDO> touristDOS = list(Wrappers.<TouristDO>lambdaQuery().eq(TouristDO::getOpenId, openId)
+            .eq(TouristDO::getValid,false));
             touristDOS.forEach(item ->{
                 TouristDTO touristDTO = new TouristDTO();
                 touristDTO.setCardId(item.getCardId());
@@ -76,7 +77,8 @@ public class TouristServiceImpl extends ServiceImpl<TouristMapper,TouristDO> imp
         try {
             TouristDO touristDO = new TouristDO();
             touristDO.setId(id);
-            touristDO.deleteById();
+            touristDO.setValid(true);
+            touristDO.updateById();
         } catch (Exception e) {
             e.printStackTrace();
             log.error("删除游客信息错误：{}",e);
@@ -88,11 +90,14 @@ public class TouristServiceImpl extends ServiceImpl<TouristMapper,TouristDO> imp
     @Override
     public TouristDTO getTouristById(Long id) {
         TouristDO touristDO = getOne(Wrappers.<TouristDO>lambdaQuery().eq(TouristDO::getId, id));
-        TouristDTO touristDTO = new TouristDTO();
-        touristDTO.setCardId(touristDO.getCardId());
-        touristDTO.setName(touristDO.getName());
-        touristDTO.setPhone(touristDO.getPhone());
-        touristDTO.setId(touristDO.getId());
-        return touristDTO;
+        if (touristDO != null)  {
+            TouristDTO touristDTO = new TouristDTO();
+            touristDTO.setCardId(touristDO.getCardId());
+            touristDTO.setName(touristDO.getName());
+            touristDTO.setPhone(touristDO.getPhone());
+            touristDTO.setId(touristDO.getId());
+            return touristDTO;
+        }
+        return null;
     }
 }

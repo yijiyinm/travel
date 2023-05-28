@@ -9,6 +9,8 @@ import com.example.travel.param.SelOrderListParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,6 +40,13 @@ public interface OrderService {
     List<SelectOrderDTO> getOrderListWX(String openId);
 
     /**
+     * 小程序用户查询分销商订单列表
+     * @param fxsCode
+     * @return
+     */
+    List<SelectOrderDTO> getFxsOrderListWX(String fxsCode);
+
+    /**
      * 后台查询支付订单列表
      * @param param
      * @return
@@ -59,7 +68,15 @@ public interface OrderService {
      * @param orderCode
      * @return
      */
-    Boolean orderRefund(String orderCode);
+    Boolean orderRefund(String orderCode, BigDecimal refundAmount);
+
+    /**
+     * 查询对应商品当天卖出多少库存
+     * @param productCode 商品编码
+     * @param dayDate 价格日期
+     * @return
+     */
+    Integer getDaySumByProductCode(String productCode, Date dayDate);
 
 
 }

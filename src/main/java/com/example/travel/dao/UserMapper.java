@@ -28,4 +28,12 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @return
      */
     Page<UserDTO> getUserPage(Page<UserDTO> page, @Param("param") SelUserListParam param);
+
+    /**
+     * 作废删除分销商
+     * @param openId
+     * @return
+     */
+    @Update("update user_wx set fxs_code = null,phone = null where open_id=#{openId}")
+    void deleteDistribution(@Param("openId") String openId);
 }

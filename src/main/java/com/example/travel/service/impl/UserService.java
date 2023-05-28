@@ -63,4 +63,11 @@ public interface UserService {
      * @return
      */
     UserDO getUserInfoByFxsCode(String fxsCode);
+
+    /**
+     * 作废删除分销商
+     * @param openId 小程序id
+     * @return
+     */
+    boolean deleteDistribution(String openId);
 }

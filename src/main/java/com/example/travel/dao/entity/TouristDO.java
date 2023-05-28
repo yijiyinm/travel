@@ -41,6 +41,12 @@ public class TouristDO extends Model<TouristDO> {
      */
     private String phone;
 
+    /**
+     * 是否删除
+     */
+    private Boolean valid;
+
+
 
     private Date updateDate;
 

@@ -162,6 +162,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     }
 
     @Override
+    public boolean deleteDistribution(String openId) {
+        baseMapper.deleteDistribution(openId);
+        return true;
+    }
+
+    @Override
     public UserDO getUserInfoByOpenId(String openId){
         log.info("getUserInfoByOpenId openId：{}",openId);
 

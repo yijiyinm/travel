@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.travel.dao.entity.DistributionAuditDO;
 import com.example.travel.dto.AddProductDTO;
-import com.example.travel.dto.DistributionDTO;
 import com.example.travel.dto.ProductPriceDTO;
 import com.example.travel.dao.ProductMapper;
 import com.example.travel.dao.entity.ProductDO;
@@ -14,6 +12,7 @@ import com.example.travel.dao.entity.ProductImgDO;
 import com.example.travel.dao.entity.ProductPriceDO;
 import com.example.travel.enums.LabelEnum;
 import com.example.travel.enums.OrderStatusEnum;
+import com.example.travel.service.OrderService;
 import com.example.travel.service.ProductImgService;
 import com.example.travel.service.ProductPriceService;
 import com.example.travel.service.ProductService;
@@ -46,8 +45,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
     private ProductImgService productImgService;
     @Autowired
     private ProductPriceService productPriceService;
-    private static final Pattern pattern = Pattern.compile("[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领]{1}[A-Z]{1}[A-Z0-9]{5,6}");
-
+    @Autowired
+    private OrderService orderService;
 
     @Override
     public boolean addProduct(AddProductDTO addProductDTO) {
@@ -86,6 +85,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
                     priceDO.setPrice(priceDTO.getPrice());
                     priceDO.setPriceCr(priceDTO.getPriceCr());
                     priceDO.setPriceEt(priceDTO.getPriceEt());
+                    priceDO.setInventory(priceDTO.getInventory());
                     priceDO.insert();
                 }
             }
@@ -149,6 +149,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
                     priceDO.setPrice(priceDTO.getPrice());
                     priceDO.setPriceCr(priceDTO.getPriceCr());
                     priceDO.setPriceEt(priceDTO.getPriceEt());
+                    priceDO.setInventory(priceDTO.getInventory());
                     log.info("修改的商品价格信息:{}"+priceDO);
                     priceDO.insert();
                 }
@@ -246,6 +247,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             productPriceDTO.setPrice(priceDO.getPrice());
             productPriceDTO.setPriceCr(priceDO.getPriceCr());
             productPriceDTO.setPriceEt(priceDO.getPriceEt());
+            productPriceDTO.setInventory(priceDO.getInventory());
+            // 剩余库存计算  查询对应当天订单数量总数进行扣除
+            Integer num = orderService.getDaySumByProductCode(productCode,priceDO.getDayDate());
+            productPriceDTO.setInventoryLeftover(priceDO.getInventory()-num);
             productPriceDTOS.add(productPriceDTO);
         }
         if (productPriceDOS !=null && productPriceDOS.size()>0) {
@@ -354,16 +359,5 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             e.printStackTrace();
         }
         return null;
-    }
-
-    public static void main(String[] args) {
-        List<String> carList = new ArrayList<>();
-        // 车牌号截取
-        Matcher matcher = pattern.matcher("车牌测试截取沪A8F241，车牌二浙A01160");
-        StringBuilder bf = new StringBuilder();
-        while (matcher.find()) {
-            carList.add(matcher.group());
-        }
-        System.out.println(carList);
     }
 }

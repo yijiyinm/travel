@@ -12,6 +12,11 @@ public class SelUserListParam {
     private Long current;
 
     /**
+     * 用户id
+     */
+    private String openId;
+
+    /**
      * 是否分销商
      */
     private Boolean distributionIs;

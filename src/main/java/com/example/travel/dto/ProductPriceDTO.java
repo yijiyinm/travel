@@ -33,4 +33,14 @@ public class ProductPriceDTO {
      */
     private BigDecimal priceEt;
 
+    /**
+     * 总库存
+     */
+    private Integer inventory;
+
+    /**
+     * 剩余库存
+     */
+    private Integer inventoryLeftover;
+
 }

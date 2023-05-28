@@ -49,11 +49,20 @@ public class UserController {
     }
 
     /**
+     * 作废删除分销商
+     */
+    @PostMapping("deleteDistribution")
+    public BaseRespResult deleteDistribution(@RequestBody SelUserListParam param) {
+        userService.deleteDistribution(param.getOpenId());
+        return BaseRespResult.successResult("删除作废成功");
+    }
+
+    /**
      * 小程序用户获取基本信息
      * @return
      */
     @PostMapping("getUserInfo")
-    public BaseRespResult getUserInfo(@RequestBody SelUserListParam param, HttpServletRequest request) {
+    public BaseRespResult getUserInfo(HttpServletRequest request) {
         // 通过token 获取openId
         // 验证登录
         String tokeninfo = request.getHeader("tokeninfo");

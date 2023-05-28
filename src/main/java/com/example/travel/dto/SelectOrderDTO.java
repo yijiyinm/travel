@@ -18,10 +18,16 @@ public class SelectOrderDTO {
      * OrderStatusEnum
      */
     private Integer orderStatus;
+
     /**
      * 支付金额
      */
     private BigDecimal payPrice;
+
+    /**
+     * 退款金额
+     */
+    private BigDecimal refundAmount;
     /**
      * 数量
      */

@@ -65,7 +65,7 @@ public class OrderController {
      */
     @PostMapping("orderRefund")
     public BaseRespResult orderRefund(@RequestBody SelOrderListParam param) {
-        Boolean ret = orderService.orderRefund(param.getOrderCode());
+        Boolean ret = orderService.orderRefund(param.getOrderCode(),param.getRefundAmount());
         if (ret){
             return BaseRespResult.successResult("退款成功");
         }
@@ -85,6 +85,16 @@ public class OrderController {
         String openId = CacheManager.get(tokeninfo);
         //通过token 得到openId并传入
         List<SelectOrderDTO> selectOrderDTOS = orderService.getOrderListWX(openId);
+        return BaseRespResult.successResult(selectOrderDTOS);
+    }
+
+    /**
+     * 小程序获取订单列表-分销商订单列表
+     * @return
+     */
+    @PostMapping("getFxsOrderListWX")
+    public BaseRespResult getFxsOrderListWX(@RequestBody SelOrderListParam param) {
+        List<SelectOrderDTO> selectOrderDTOS = orderService.getFxsOrderListWX(param.getFxsCode());
         return BaseRespResult.successResult(selectOrderDTOS);
     }
 

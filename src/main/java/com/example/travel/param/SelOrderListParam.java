@@ -2,6 +2,8 @@ package com.example.travel.param;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 
 /**
  * @author yijiyin
@@ -16,6 +18,11 @@ public class SelOrderListParam {
      * 订单编码
      */
     private String orderCode;
+
+    /**
+     * 退款金额
+     */
+    private BigDecimal refundAmount;
 
     /**
      * openId
