@@ -51,7 +51,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         if (param.getDistributionIs() != null){
             if (param.getDistributionIs()){
                 // 是供应商
-                wrapper.isNotNull(UserDO::getFxsCode);
+                wrapper.isNotNull(UserDO::getFxsCode).ne(UserDO::getFxsCode,"");
             }else {
                 wrapper.isNull(UserDO::getFxsCode);
             }
