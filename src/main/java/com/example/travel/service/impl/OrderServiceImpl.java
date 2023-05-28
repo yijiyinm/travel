@@ -229,6 +229,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
                 selectOrderDTO.setMainUrl(addProductDTO.getMainUrl());
                 selectOrderDTO.setDescription(addProductDTO.getDescription());
                 selectOrderDTO.setChuXingDate(orderDO.getChuXingDate());
+                // 出行人 取游客第一个人
+                // 游客信息
+                String[] touristList = orderDO.getTouristIds().split(",");
+                TouristDTO touristDTO = touristService.getTouristById(Long.valueOf(touristList[0]));
+                if (touristDTO != null) {
+                    selectOrderDTO.setPedestrianName(touristDTO.getName());
+                }
+
                 selectOrderDTOS.add(selectOrderDTO);
             }
             return selectOrderDTOS;

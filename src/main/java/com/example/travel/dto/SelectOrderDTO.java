@@ -69,6 +69,11 @@ public class SelectOrderDTO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
 
+    /**
+     * 出行人
+     */
+    private String pedestrianName;
+
 
     /**
      * 详情字段
