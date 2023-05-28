@@ -248,9 +248,13 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             productPriceDTO.setPriceCr(priceDO.getPriceCr());
             productPriceDTO.setPriceEt(priceDO.getPriceEt());
             productPriceDTO.setInventory(priceDO.getInventory());
+            Integer inventory = priceDO.getInventory();
             // 剩余库存计算  查询对应当天订单数量总数进行扣除
+            if (inventory == null) {
+                inventory = 0;
+            }
             Integer num = orderService.getDaySumByProductCode(productCode,priceDO.getDayDate());
-            productPriceDTO.setInventoryLeftover(priceDO.getInventory()-num);
+            productPriceDTO.setInventoryLeftover(inventory-num);
             productPriceDTOS.add(productPriceDTO);
         }
         if (productPriceDOS !=null && productPriceDOS.size()>0) {
