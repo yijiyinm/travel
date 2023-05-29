@@ -1,1 +1,0 @@
-import{bh as i}from"./index-0c202f84.js";function s(t){return i({url:"/user/getUserList",method:"post",data:t})}function o(t){return i({url:"/distribution/getDistributionList",method:"post",data:t})}function u(t){return i({url:"/distribution/distributionAudit",method:"post",data:t})}export{o as a,u as d,s as g};
