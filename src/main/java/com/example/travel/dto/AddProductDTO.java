@@ -69,6 +69,11 @@ public class AddProductDTO {
      */
     private Integer monthSalesNum;
 
+    /**
+     * 提前天数
+     */
+    private Integer advanceDayNum;
+
     private Long size;
     private Long current;
 }

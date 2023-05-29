@@ -63,6 +63,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             productDO.setSequence(addProductDTO.getSequence());
             productDO.setMainUrl(addProductDTO.getMainUrl());
             productDO.setMonthSalesNum(addProductDTO.getMonthSalesNum());
+            productDO.setAdvanceDayNum(addProductDTO.getAdvanceDayNum());
             productDO.insert();
 
             // 图片信息存储
@@ -114,6 +115,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             productDO.setSequence(addProductDTO.getSequence());
             productDO.setMainUrl(addProductDTO.getMainUrl());
             productDO.setMonthSalesNum(addProductDTO.getMonthSalesNum());
+            productDO.setAdvanceDayNum(addProductDTO.getAdvanceDayNum());
             productDO.updateById();
 
             // 删除之前的照片 重新保存
@@ -230,6 +232,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
         addProductDTO.setMainUrl(productDO.getMainUrl());
         addProductDTO.setStatus(productDO.getStatus());
         addProductDTO.setMonthSalesNum(productDO.getMonthSalesNum());
+        addProductDTO.setAdvanceDayNum(productDO.getAdvanceDayNum());
 
         // 价格信息
         List<ProductPriceDTO> productPriceDTOS = new ArrayList<>();

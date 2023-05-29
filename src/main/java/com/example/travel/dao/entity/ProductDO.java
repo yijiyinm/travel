@@ -57,6 +57,11 @@ public class ProductDO extends Model<ProductDO> {
     private String description;
 
     /**
+     * 提前天数
+     */
+    private Integer advanceDayNum;
+
+    /**
      * 产品状态 1-草稿，2-上架，3-下架
      */
     private Integer status;
