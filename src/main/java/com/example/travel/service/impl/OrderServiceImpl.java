@@ -176,6 +176,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             response.setPackageVal(orderDO.getPrePayId());
             response.setSignType("RSA");
             response.setPaySign(sign);
+            return response;
         }
         return null;
     }

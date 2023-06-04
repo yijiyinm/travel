@@ -90,7 +90,7 @@ public class SelectOrderDTO {
     private BigDecimal refundAmount;
 
     /**
-     * 本次退款金额
+     * 本次申请退款金额
      */
     private BigDecimal thisRefundAmount;
 
