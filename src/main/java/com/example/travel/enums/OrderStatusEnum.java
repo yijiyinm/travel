@@ -12,7 +12,9 @@ public enum OrderStatusEnum {
     DELETE_STATUS(4,"已全部退款,删除"),
     PART_RETURN(5,"部分退款"),
     PART_RETURN_PROCESS(6,"退款申请中"),
-    PART_RETURN_ERROR(7,"退款失败");
+    PART_RETURN_ERROR(7,"退款失败"),
+    CANCEL_STATUS(8,"超时取消"),
+    END_PAY(9,"已经出行");
 
     private final Integer status;
     private final String desc;
