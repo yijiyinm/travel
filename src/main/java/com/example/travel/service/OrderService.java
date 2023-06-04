@@ -1,6 +1,7 @@
 package com.example.travel.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.travel.dao.entity.OrderDO;
 import com.example.travel.dto.CreateOrderDTO;
 import com.example.travel.dto.CreateOrderReturnDTO;
 import com.example.travel.dto.SelectOrderDTO;
@@ -51,7 +52,7 @@ public interface OrderService {
      * @param openId
      * @return
      */
-    List<SelectOrderDTO> getOrderListWX(String openId);
+    List<SelectOrderDTO> getOrderListWX(String openId,SelectOrderDTO selectOrderDTO);
 
     /**
      * 小程序用户查询分销商订单列表
@@ -89,5 +90,15 @@ public interface OrderService {
      * @return
      */
     Integer getDaySumByProductCode(String productCode, Date dayDate);
+
+
+
+    /**
+     * 小程序用户查询支付订单列表
+     * @param selectOrderDTO
+     * @return
+     */
+    List<OrderDO> getAllOrder(SelectOrderDTO selectOrderDTO);
+
 
 }

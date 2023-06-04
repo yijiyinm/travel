@@ -13,7 +13,7 @@ import java.security.SecureRandom;
 public class GenerateKey
 {
     static public void main(String args[]) throws Exception {
-        String keyFilename = args[0];
+        String keyFilename = "jiami";
         String algorithm = "DES";
 
         // 生成密匙

@@ -20,6 +20,7 @@ import com.example.travel.dto.AddProductDTO;
 import com.example.travel.service.ProductService;
 import com.example.travel.util.AppInfoEnum;
 import com.example.travel.util.GenerateCodeUtil;
+import com.google.common.collect.Lists;
 import com.wechat.pay.java.core.RSAAutoCertificateConfig;
 import com.wechat.pay.java.core.cipher.Signer;
 import com.wechat.pay.java.core.notification.NotificationParser;
@@ -159,7 +160,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
 
     @Override
     public CreateOrderReturnDTO payOrder(String orderCode) {
-        OrderDO orderDO = getOne(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getOrderCode, orderCode));
+        OrderDO orderDO = getOne(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getOrderCode, orderCode).eq(OrderDO::getStatus,OrderStatusEnum.WAIT_PAY.getStatus()));
         if (orderDO != null) {
 
             long timestamp = Instant.now().getEpochSecond();
@@ -250,11 +251,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     }
 
     @Override
-    public List<SelectOrderDTO> getOrderListWX(String openId) {
+    public List<SelectOrderDTO> getOrderListWX(String openId,SelectOrderDTO selectOrderDT) {
         log.info("小程序获取订单用户openId:{}"+openId);
         try {
             List<SelectOrderDTO> selectOrderDTOS = new ArrayList<>();
-            List<OrderDO> orderDOS = list(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getOpenId, openId).orderByDesc(OrderDO::getCreateDate));
+            LambdaQueryWrapper<OrderDO> eq =  Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getOpenId, openId);
+            if(!Objects.isNull(selectOrderDT.getOrderStatus())){
+                eq.in(OrderDO::getStatus,selectOrderDT.getOrderStatus());
+            }
+
+            List<OrderDO> orderDOS = list(eq.orderByDesc(OrderDO::getCreateDate));
             //List<OrderDO> orderDOS = list(Wrappers.<OrderDO>lambdaQuery().orderByDesc(OrderDO::getCreateDate));
             for (OrderDO orderDO : orderDOS){
                 SelectOrderDTO selectOrderDTO = new SelectOrderDTO();
@@ -476,6 +482,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             return 0;
         }
         return num;
+    }
+
+    @Override
+    public List<OrderDO> getAllOrder(SelectOrderDTO selectOrderDT) {
+        try {
+            List<SelectOrderDTO> selectOrderDTOS = new ArrayList<>();
+            LambdaQueryWrapper<OrderDO> orderDOLambdaQueryWrapper = Wrappers.<OrderDO>lambdaQuery();
+            if(!Objects.isNull(selectOrderDT.getOrderStatus())){
+                orderDOLambdaQueryWrapper.in(OrderDO::getStatus,selectOrderDT.getOrderStatus());
+            }
+
+            List<OrderDO> orderDOS = list(orderDOLambdaQueryWrapper.orderByDesc(OrderDO::getCreateDate));
+
+            return orderDOS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("getAllOrder");
+        }
+        return Lists.newArrayList();
     }
 
     /**
