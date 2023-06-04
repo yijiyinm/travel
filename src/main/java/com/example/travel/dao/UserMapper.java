@@ -34,6 +34,6 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param openId
      * @return
      */
-    @Update("update user_wx set fxs_code = null,phone = null where open_id=#{openId}")
+    @Update("update user_wx set fxs_is = 0 where open_id=#{openId}")
     void deleteDistribution(@Param("openId") String openId);
 }

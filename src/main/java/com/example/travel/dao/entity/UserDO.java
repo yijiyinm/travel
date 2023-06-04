@@ -59,6 +59,12 @@ public class UserDO extends Model<UserDO> {
      */
     private Date createDate;
 
+    /**
+     * 是否分销商
+     * @return
+     */
+    private Boolean fxsIs;
+
     @Override
     public Serializable pkVal() {
         return this.id;

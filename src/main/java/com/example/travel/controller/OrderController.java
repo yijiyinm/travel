@@ -49,6 +49,18 @@ public class OrderController {
         return BaseRespResult.successResult(returnDTO);
     }
 
+    /**
+     * 待支付订单支付
+     * @return
+     */
+    @PostMapping("payOrder")
+    public BaseRespResult payOrder(@RequestBody CreateOrderReturnDTO createOrderReturnDTO) {
+
+
+        CreateOrderReturnDTO returnDTO = orderService.payOrder(createOrderReturnDTO.getOrderCode());
+        return BaseRespResult.successResult(returnDTO);
+    }
+
 
     /**
      * 后台获取订单列表
@@ -67,9 +79,9 @@ public class OrderController {
     public BaseRespResult orderRefund(@RequestBody SelOrderListParam param) {
         Boolean ret = orderService.orderRefund(param.getOrderCode(),param.getRefundAmount());
         if (ret){
-            return BaseRespResult.successResult("退款成功");
+            return BaseRespResult.successResult("申请退款成功");
         }
-        return BaseRespResult.errorResult("退款失败");
+        return BaseRespResult.errorResult("申请退款失败");
     }
 
     /**

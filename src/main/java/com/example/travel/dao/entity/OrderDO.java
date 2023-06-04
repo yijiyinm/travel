@@ -93,9 +93,24 @@ public class OrderDO extends Model<OrderDO> {
     private String prePayId;
 
     /**
-     * 退款金额
+     * 总退款金额
      */
     private BigDecimal refundAmount;
+
+    /**
+     * 本次退款金额
+     */
+    private BigDecimal thisRefundAmount;
+
+    /**
+     * 退款单号
+     */
+    private String returnCode;
+
+//    /**
+//     * 退款失败原因
+//     */
+//    private String remark;
 
     private Date updateDate;
 

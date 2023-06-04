@@ -46,16 +46,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
         Page<UserDO> page = new Page(param.getCurrent(),param.getSize());
         LambdaQueryWrapper<UserDO> wrapper = Wrappers.<UserDO>lambdaQuery()
-                .like(StringUtils.isNotEmpty(param.getPhone()),UserDO::getPhone,param.getPhone());
+                .like(StringUtils.isNotEmpty(param.getPhone()),UserDO::getPhone,param.getPhone())
+                .eq(param.getDistributionIs() != null,UserDO::getFxsIs,param.getDistributionIs());
 
-        if (param.getDistributionIs() != null){
-            if (param.getDistributionIs()){
-                // 是供应商
-                wrapper.isNotNull(UserDO::getFxsCode).ne(UserDO::getFxsCode,"");
-            }else {
-                wrapper.isNull(UserDO::getFxsCode);
-            }
-        }
         Page<UserDO> doPage = page(page,wrapper);
         log.info("用户总数：{}",doPage.getTotal());
         pageDTO.setTotal(doPage.getTotal());
@@ -134,6 +127,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     }
 
     @Override
+    public void updateByIds(UserDO userDO) {
+        userDO.updateById();
+    }
+
+    @Override
     public WxUserDTO getUserInfo(String openId) {
         WxUserDTO wxUserDTO = new WxUserDTO();
         // 分销商申请状态
@@ -141,9 +139,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         if (dto != null) {
             wxUserDTO.setFxsRequestStatus(dto.getStatus());
             if (OrderStatusEnum.ALREADY_PAY.getStatus().equals(dto.getStatus())){
-                UserDO userDO = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getOpenId, openId));
-                if (StringUtils.isNotEmpty(userDO.getFxsCode())){
+                UserDO userDO = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getOpenId, openId).eq(UserDO::getFxsIs,true));
+                if (userDO != null) {
                     wxUserDTO.setFxsCode(userDO.getFxsCode());
+                } else {
+                    wxUserDTO.setFxsRequestStatus(4);
                 }
             }
         } else {

@@ -25,10 +25,6 @@ public class SelectOrderDTO {
     private BigDecimal payPrice;
 
     /**
-     * 退款金额
-     */
-    private BigDecimal refundAmount;
-    /**
      * 数量
      */
     private Integer num;
@@ -87,4 +83,19 @@ public class SelectOrderDTO {
      * 游客信息
      */
     private List<TouristDTO> touristInfo;
+
+    /**
+     * 总退款金额
+     */
+    private BigDecimal refundAmount;
+
+    /**
+     * 本次退款金额
+     */
+    private BigDecimal thisRefundAmount;
+
+    /**
+     * 退款单号
+     */
+    private String returnCode;
 }

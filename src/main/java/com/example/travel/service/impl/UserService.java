@@ -51,6 +51,13 @@ public interface UserService {
     void updateFXS(String openId,String fxsCode,String phone);
 
     /**
+     * 成为分销商
+     * @param userDO
+     * @return
+     */
+    void updateByIds(UserDO userDO);
+
+    /**
      * 小程序用户获取基本信息
      * @param  openId
      * @return

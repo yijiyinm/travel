@@ -21,11 +21,18 @@ import com.example.travel.service.ProductService;
 import com.example.travel.util.AppInfoEnum;
 import com.example.travel.util.GenerateCodeUtil;
 import com.wechat.pay.java.core.RSAAutoCertificateConfig;
+import com.wechat.pay.java.core.cipher.Signer;
 import com.wechat.pay.java.core.notification.NotificationParser;
 import com.wechat.pay.java.core.notification.RequestParam;
+import com.wechat.pay.java.core.util.NonceUtil;
 import com.wechat.pay.java.service.partnerpayments.jsapi.model.Transaction;
 import com.wechat.pay.java.service.payments.jsapi.JsapiServiceExtension;
 import com.wechat.pay.java.service.payments.jsapi.model.*;
+import com.wechat.pay.java.service.refund.RefundService;
+import com.wechat.pay.java.service.refund.model.AmountReq;
+import com.wechat.pay.java.service.refund.model.CreateRequest;
+import com.wechat.pay.java.service.refund.model.Refund;
+import com.wechat.pay.java.service.refund.model.RefundNotification;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +42,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -56,6 +65,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     public static String merchantId = AppInfoEnum.MCH_ID.getValue();
     // public static String wechatPayCertificatePath = "src/main/resources/apiclient_cert.pem";
     public static JsapiServiceExtension jsapiServiceExtension;
+    public static RefundService refundService;
 
 
 
@@ -82,7 +92,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             prepayRequest.setMchid(merchantId);
             prepayRequest.setDescription("商品描述");
             prepayRequest.setOutTradeNo(outTradeNo);
-            // todo 回调地址
+            // 回调地址
             prepayRequest.setNotifyUrl("https://www.cloudroc.top/notify/wxPay/notify");
             Amount amount = new Amount();
             amount.setTotal(param.getPayPrice().multiply(BigDecimal.valueOf(100)).intValue());
@@ -150,6 +160,27 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     }
 
     @Override
+    public CreateOrderReturnDTO payOrder(String orderCode) {
+        OrderDO orderDO = getOne(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getOrderCode, orderCode));
+        if (orderDO != null) {
+
+            long timestamp = Instant.now().getEpochSecond();
+            String nonceStr = NonceUtil.createNonce(32);
+            String message =
+                    AppInfoEnum.APP_ID.getValue() + "\n" + timestamp + "\n" + nonceStr + "\n" + orderDO.getPrePayId() + "\n";
+            String sign = rsaAutoCertificateConfig.createSigner().sign(message).getSign();
+            CreateOrderReturnDTO response = new CreateOrderReturnDTO();
+            response.setAppId(AppInfoEnum.APP_ID.getValue());
+            response.setTimeStamp(String.valueOf(timestamp));
+            response.setNonceStr(nonceStr);
+            response.setPackageVal(orderDO.getPrePayId());
+            response.setSignType("RSA");
+            response.setPaySign(sign);
+        }
+        return null;
+    }
+
+    @Override
     public void wxPayNotify(HttpServletRequest request, HttpServletResponse response) {
         Transaction transaction = getWxNotifyParamMap(request);
         log.info("支付回调结果:"+transaction);
@@ -176,6 +207,46 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
 
             log.info("更新数据:{}",orderDO);
             orderDO.updateById();
+        }
+    }
+
+    @Override
+    public void wxPayReturnNotify(HttpServletRequest request, HttpServletResponse response) {
+        RefundNotification refundNotification = getWxReturnNotifyParamMap(request);
+        log.info("退款结果:{}",refundNotification);
+        if (refundNotification != null) {
+
+            OrderDO orderDO = null;
+            try {
+                orderDO = getOne(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getReturnCode, refundNotification.getOutRefundNo()));
+                log.info("用户信息:{}",orderDO);
+            } catch (Exception e) {
+                log.error("查询商户订单异常:{}",e);
+                e.printStackTrace();
+                return;
+            }
+
+            String success = "SUCCESS";
+            if (success.equals(refundNotification.getRefundStatus())) {
+                // 退款成功
+                //Double sum = 100D;
+                //DecimalFormat df = new DecimalFormat("0.00");
+                //String price = df.format(refundNotification.getAmount().getRefund()/sum);
+
+                BigDecimal returnAmount = orderDO.getRefundAmount().add(orderDO.getThisRefundAmount());
+                orderDO.setRefundAmount(returnAmount);
+                if (orderDO.getPrice().compareTo(returnAmount) == 1) {
+                    orderDO.setStatus(OrderStatusEnum.PART_RETURN.getStatus());
+                } else {
+                    orderDO.setStatus(OrderStatusEnum.DELETE_STATUS.getStatus());
+                }
+                orderDO.setThisRefundAmount(null);
+            }else {
+                // 退款失败
+                orderDO.setStatus(OrderStatusEnum.PART_RETURN_ERROR.getStatus());
+            }
+            orderDO.updateById();
+
         }
     }
 
@@ -293,6 +364,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
                 selectOrderDTO.setCreateDate(orderDO.getCreateDate());
                 selectOrderDTO.setChuXingDate(orderDO.getChuXingDate());
                 selectOrderDTO.setRefundAmount(orderDO.getRefundAmount());
+                selectOrderDTO.setReturnCode(orderDO.getReturnCode());
+                selectOrderDTO.setThisRefundAmount(orderDO.getThisRefundAmount());
                 selectOrderDTOS.add(selectOrderDTO);
             }
             dtoPage.setRecords(selectOrderDTOS);
@@ -314,6 +387,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             selectOrderDTO.setNum(orderDO.getNum());
             selectOrderDTO.setChuXingDate(orderDO.getChuXingDate());
             selectOrderDTO.setRefundAmount(orderDO.getRefundAmount());
+            selectOrderDTO.setReturnCode(orderDO.getReturnCode());
+            selectOrderDTO.setThisRefundAmount(orderDO.getThisRefundAmount());
+            selectOrderDTO.setOrderCode(orderDO.getOrderCode());
             // 产品信息
             AddProductDTO addProductDTO = productService.getProductDetail(orderDO.getProductCode());
             selectOrderDTO.setProductInfo(addProductDTO);
@@ -336,14 +412,53 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
 
     @Override
     public Boolean orderRefund(String orderCode,BigDecimal refundAmount) {
+
         try {
             OrderDO orderDO = getOne(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getOrderCode, orderCode));
-            if (OrderStatusEnum.ALREADY_PAY.getStatus().equals(orderDO.getStatus())){
-                orderDO.setStatus(OrderStatusEnum.DELETE_STATUS.getStatus());
-                orderDO.setRefundAmount(refundAmount);
-                return orderDO.updateById();
+            // 验证退款金额
+            //加上本次退款金额验证是否超过订单总金额
+            BigDecimal refundPrice = orderDO.getRefundAmount().add(refundAmount);
+            int compare = refundPrice.compareTo(orderDO.getPrice());
+            if (compare == 1) {
+                log.error("退款金额超过最大订单金额");
+                return false;
+            }
+
+            if (OrderStatusEnum.ALREADY_PAY.getStatus().equals(orderDO.getStatus()) || OrderStatusEnum.PART_RETURN.getStatus().equals(orderDO.getStatus())){
+
+                // 退款单号生成
+                String returnCode = "TK"+GenerateCodeUtil.createCode(12);
+
+                // 退款接口调用
+
+                // 初始化服务
+                refundService =
+                        new RefundService.Builder()
+                                .config(rsaAutoCertificateConfig)
+                                .build();
+                CreateRequest createRequest = new CreateRequest();
+                createRequest.setOutTradeNo(orderDO.getOutTradeNo());
+                createRequest.setOutRefundNo(returnCode);
+                createRequest.setNotifyUrl("https://www.cloudroc.top/notify/wxPay/return/notify");
+
+                AmountReq amountReq = new AmountReq();
+                amountReq.setTotal(orderDO.getPrice().multiply(BigDecimal.valueOf(100)).longValue());
+                amountReq.setRefund(refundAmount.multiply(BigDecimal.valueOf(100)).longValue());
+                amountReq.setCurrency("CNY");
+                createRequest.setAmount(amountReq);
+                Refund refund = refundService.create(createRequest);
+                if (refund != null || StringUtils.isNotEmpty(refund.getRefundId())){
+                    orderDO.setStatus(OrderStatusEnum.PART_RETURN_PROCESS.getStatus());
+                    orderDO.setReturnCode(returnCode);
+                    orderDO.setThisRefundAmount(refundAmount);
+                    //orderDO.setRefundAmount(refundAmount);
+                    return orderDO.updateById();
+                } else {
+                    log.error("发起退款申请出现异常");
+                    return false;
+                }
             } else {
-                log.info("只有支付完成订单才能退款！");
+                log.info("只有支付完成或部分退款订单才能退款！");
                 return false;
             }
         } catch (Exception e) {
@@ -400,6 +515,46 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
         } catch (IOException e) {
             e.printStackTrace();
             log.error("支付回调异常");
+            return null;
+        }
+    }
+
+    /**
+     * desc 获取微信支付回调请求参数
+     *
+     */
+    private RefundNotification getWxReturnNotifyParamMap(HttpServletRequest request) {
+
+
+        try {
+            BufferedReader br = request.getReader();
+            String str  = "";
+            String wholeStr = "";
+            while((str = br.readLine()) != null){
+                wholeStr += str;
+            }
+
+            // 构造 RequestParam
+            RequestParam requestParam = new RequestParam.Builder()
+                    .serialNumber(request.getHeader("Wechatpay-Serial"))
+                    .nonce(request.getHeader("Wechatpay-Nonce"))
+                    .signature(request.getHeader("Wechatpay-Signature"))
+                    .timestamp(request.getHeader("Wechatpay-Timestamp"))
+                    .signType(request.getHeader("Wechatpay-Signature-Type"))
+                    .body(wholeStr)
+                    .build();
+
+            // 如果已经初始化了 RSAAutoCertificateConfig，可直接使用
+
+            // 初始化 NotificationParser
+            NotificationParser parser = new NotificationParser(rsaAutoCertificateConfig);
+
+            log.info("body信息：{}",wholeStr);
+            RefundNotification transaction = parser.parse(requestParam, RefundNotification.class);
+            return transaction;
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error("退款通知回调异常");
             return null;
         }
     }

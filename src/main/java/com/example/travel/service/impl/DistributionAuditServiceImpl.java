@@ -6,12 +6,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.travel.dao.DistributionAuditMapper;
 import com.example.travel.dao.entity.DistributionAuditDO;
 import com.example.travel.dao.entity.OrderDO;
+import com.example.travel.dao.entity.UserDO;
 import com.example.travel.dto.DistributionDTO;
 import com.example.travel.enums.OrderStatusEnum;
 import com.example.travel.service.DistributionAuditService;
 import com.example.travel.service.OrderService;
 import com.example.travel.util.GenerateCodeUtil;
+import com.wechat.pay.java.core.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -84,7 +87,15 @@ public class DistributionAuditServiceImpl extends ServiceImpl<DistributionAuditM
             if (OrderStatusEnum.ALREADY_PAY.getStatus().equals(status)){
                 // 生成分销商编号 将分销商手机号存入小程序用户表内
                 String code ="FX"+GenerateCodeUtil.createCode(3)+distributionAuditDO.getPhone();
-                userService.updateFXS(distributionAuditDO.getOpenId(),code,distributionAuditDO.getPhone());
+                UserDO userDO = userService.getUserInfoByOpenId(distributionAuditDO.getOpenId());
+                if (StringUtils.isNotEmpty(userDO.getFxsCode())) {
+                    userDO.setFxsIs(true);
+                    userDO.setPhone(distributionAuditDO.getPhone());
+                    //userDO.updateById();
+                    userService.updateByIds(userDO);
+                } else {
+                    userService.updateFXS(distributionAuditDO.getOpenId(),code,distributionAuditDO.getPhone());
+                }
             } else if (OrderStatusEnum.FAILURE_PAY.getStatus().equals(status)){
             } else {
                 log.error("审核状态错误");

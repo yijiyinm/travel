@@ -26,11 +26,25 @@ public interface OrderService {
     CreateOrderReturnDTO createOrder(CreateOrderDTO createOrderDTO,String openId);
 
     /**
+     * 待支付订单支付
+     * @param orderCode
+     * @return
+     */
+    CreateOrderReturnDTO payOrder(String orderCode);
+
+    /**
      * 支付回调
      * @param request
      * @param response
      */
     void wxPayNotify(HttpServletRequest request, HttpServletResponse response);
+
+    /**
+     * 退款回调
+     * @param request
+     * @param response
+     */
+    void wxPayReturnNotify(HttpServletRequest request, HttpServletResponse response);
 
     /**
      * 小程序用户查询支付订单列表
@@ -52,8 +66,6 @@ public interface OrderService {
      * @return
      */
     Page<SelectOrderDTO> getOrderList(SelOrderListParam param);
-
-
 
     /**
      * 小程序用户查询支付订单详情
@@ -77,6 +89,5 @@ public interface OrderService {
      * @return
      */
     Integer getDaySumByProductCode(String productCode, Date dayDate);
-
 
 }

@@ -25,4 +25,10 @@ public class NotifyController {
         log.info("进入微信支付回调++++++++++");
         orderService.wxPayNotify(request, response);
     }
+
+    @PostMapping("wxPay/return/notify")
+    public void wxPayReturnNotify(HttpServletRequest request, HttpServletResponse response) {
+        log.info("进入微信支付退款回调++++++++++");
+        orderService.wxPayReturnNotify(request, response);
+    }
 }
