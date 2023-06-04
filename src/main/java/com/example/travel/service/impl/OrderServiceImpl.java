@@ -28,11 +28,9 @@ import com.wechat.pay.java.core.util.NonceUtil;
 import com.wechat.pay.java.service.partnerpayments.jsapi.model.Transaction;
 import com.wechat.pay.java.service.payments.jsapi.JsapiServiceExtension;
 import com.wechat.pay.java.service.payments.jsapi.model.*;
+import com.wechat.pay.java.service.payments.jsapi.model.Amount;
 import com.wechat.pay.java.service.refund.RefundService;
-import com.wechat.pay.java.service.refund.model.AmountReq;
-import com.wechat.pay.java.service.refund.model.CreateRequest;
-import com.wechat.pay.java.service.refund.model.Refund;
-import com.wechat.pay.java.service.refund.model.RefundNotification;
+import com.wechat.pay.java.service.refund.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -228,7 +226,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             }
 
             String success = "SUCCESS";
-            if (success.equals(refundNotification.getRefundStatus())) {
+            if (Status.SUCCESS.equals(refundNotification.getRefundStatus())) {
                 // 退款成功
                 //Double sum = 100D;
                 //DecimalFormat df = new DecimalFormat("0.00");
