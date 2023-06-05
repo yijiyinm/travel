@@ -48,15 +48,15 @@ public class ScheduledConfig  {
 
                 }
                 if(OrderStatusEnum.ALREADY_PAY.getStatus().equals(orderDO.getStatus())){
+                    String chuXingDate = orderDO.getChuXingDate();
+                    String format = fmt.format(new Date());
+                    if(chuXingDate.compareTo(format)<=0){
+                        log.error("订单已经出行chuXingDate  {}", chuXingDate);
+                        orderDO.setStatus(OrderStatusEnum.END_PAY.getStatus());
+                        orderDO.updateById();
+                    }
+                }
 
-                }
-                String chuXingDate = orderDO.getChuXingDate();
-                String format = fmt.format(new Date());
-                if(chuXingDate.compareTo(format)>=0){
-                    log.error("订单已经出行chuXingDate  {}", chuXingDate);
-                    orderDO.setStatus(OrderStatusEnum.END_PAY.getStatus());
-                    orderDO.updateById();
-                }
             }catch (Exception e){
                 e.printStackTrace();
                 log.info("订单定时任务异常 {}",JSON.toJSONString(orderDO));
