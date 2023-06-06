@@ -18,4 +18,7 @@ public interface ProductPriceMapper extends BaseMapper<ProductPriceDO> {
 
     @Delete("delete from product_price where product_code=#{productCode} and day_date >= #{day} order by day_date ")
     void deletePriceInfoByDay(@Param("productCode") String productCode, @Param("day") String day);
+
+    @Select("select price,price_cr,price_et,day_date,inventory from product_price where product_code=#{productCode} and day_date = #{day}")
+    ProductPriceDO getProductDayDetail(@Param("productCode") String productCode, @Param("day") String day);
 }

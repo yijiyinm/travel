@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.travel.dao.OrderMapper;
+import com.example.travel.dao.entity.ProductPriceDO;
 import com.example.travel.dao.entity.UserDO;
 import com.example.travel.dto.CreateOrderDTO;
 import com.example.travel.dto.CreateOrderReturnDTO;
@@ -15,6 +16,7 @@ import com.example.travel.dao.entity.OrderDO;
 import com.example.travel.enums.OrderStatusEnum;
 import com.example.travel.param.SelOrderListParam;
 import com.example.travel.service.OrderService;
+import com.example.travel.service.ProductPriceService;
 import com.example.travel.service.TouristService;
 import com.example.travel.dto.AddProductDTO;
 import com.example.travel.service.ProductService;
@@ -59,6 +61,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     private UserService userService;
     @Autowired
     private RSAAutoCertificateConfig rsaAutoCertificateConfig;
+    @Autowired
+    private ProductPriceService productPriceService;
 
     public static String merchantId = AppInfoEnum.MCH_ID.getValue();
     // public static String wechatPayCertificatePath = "src/main/resources/apiclient_cert.pem";
@@ -71,10 +75,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     @Override
     public CreateOrderReturnDTO createOrder(CreateOrderDTO param,String openId){
         log.info("创建订单入参:{}",param);
+        CreateOrderReturnDTO returnDTO = new CreateOrderReturnDTO();
+
+
         OrderDO orderDO = new OrderDO();
         String orderCode = "DD"+GenerateCodeUtil.createCode(18);
         PrepayWithRequestPaymentResponse paymentResponse=null;
         try {
+            Integer num = this.getDaySumByProductCode(param.getProductCode(),new SimpleDateFormat("yyyy-MM-dd").parse(param.getChuXingDate()));
+            log.info("查询出的已出单数量{}",num);
+            ProductPriceDO productPriceDO =productPriceService.getProductDayDetail(param.getProductCode(),param.getChuXingDate());
+            log.info("查询出的对应商品价格库存信息{}",productPriceDO);
+            Integer inventoryLeftover = productPriceDO.getInventory()-num;
+            if (inventoryLeftover <= 0) {
+                returnDTO.setErrorRemark("库存不足");
+                return returnDTO;
+            }
+
               String outTradeNo = "OTN"+GenerateCodeUtil.createCode(10);
 
 
@@ -140,7 +157,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
         orderDO.setCreateDate(new Date());
         orderDO.setUpdateDate(orderDO.getCreateDate());
         orderDO.insert();
-        CreateOrderReturnDTO returnDTO = new CreateOrderReturnDTO();
         returnDTO.setOrderCode(orderCode);
         returnDTO.setPackageVal(paymentResponse.getPackageVal());
         returnDTO.setPaySign(paymentResponse.getPaySign());

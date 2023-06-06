@@ -25,6 +25,6 @@ public interface OrderMapper extends BaseMapper<OrderDO> {
      * @param dayDate
      * @return
      */
-    @Select("select sum(num) from user_order where product_code=#{productCode} and chu_xing_date=#{dayDate} and status = 2")
+    @Select("select sum(num) from user_order where product_code=#{productCode} and chu_xing_date=#{dayDate} and status in(1,2,5,6,7,9)")
     Integer getDaySumByProductCode(@Param("productCode") String productCode,@Param("dayDate") String dayDate);
 }

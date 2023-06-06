@@ -40,4 +40,9 @@ public class CreateOrderReturnDTO {
      */
     private String paySign;
 
+    /**
+     * 错误提示
+     */
+    private String errorRemark;
+
 }

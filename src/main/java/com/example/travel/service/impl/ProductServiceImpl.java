@@ -245,6 +245,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
         String day = sdf.format(date);
         List<ProductPriceDO> productPriceDOS = productPriceService.getPriceInfoByDay(productCode,day);
         for (ProductPriceDO priceDO : productPriceDOS){
+            log.info("商品价格信息：{}",productDO);
             ProductPriceDTO productPriceDTO = new ProductPriceDTO();
             productPriceDTO.setDayDate(priceDO.getDayDate());
             productPriceDTO.setPrice(priceDO.getPrice());
@@ -257,7 +258,11 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
                 inventory = 0;
             }
             Integer num = orderService.getDaySumByProductCode(productCode,priceDO.getDayDate());
+            log.info("该商品已下单数量:{}",num);
             productPriceDTO.setInventoryLeftover(inventory-num);
+            if (productPriceDTO.getInventoryLeftover()<0) {
+                productPriceDTO.setInventoryLeftover(0);
+            }
             productPriceDTOS.add(productPriceDTO);
         }
         if (productPriceDOS !=null && productPriceDOS.size()>0) {

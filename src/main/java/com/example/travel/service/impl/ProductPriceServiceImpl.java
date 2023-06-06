@@ -3,6 +3,7 @@ package com.example.travel.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.travel.dao.ProductPriceMapper;
 import com.example.travel.dao.entity.ProductPriceDO;
+import com.example.travel.dto.ProductPriceDTO;
 import com.example.travel.service.ProductPriceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,5 +25,10 @@ public class ProductPriceServiceImpl extends ServiceImpl<ProductPriceMapper,Prod
     @Override
     public void deletePriceInfoByDay(String productCode, String day) {
          baseMapper.deletePriceInfoByDay(productCode,day);
+    }
+
+    @Override
+    public ProductPriceDO getProductDayDetail(String productCode, String day) {
+        return baseMapper.getProductDayDetail(productCode,day);
     }
 }
