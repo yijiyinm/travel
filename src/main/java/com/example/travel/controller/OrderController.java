@@ -89,14 +89,14 @@ public class OrderController {
      * @return
      */
     @PostMapping("getOrderListWX")
-    public BaseRespResult getOrderListWX(HttpServletRequest request) {
+    public BaseRespResult getOrderListWX(HttpServletRequest request,@RequestBody SelectOrderDTO selectOrderDTO) {
 
         // 验证登录
         String tokeninfo = request.getHeader("tokeninfo");
 
         String openId = CacheManager.get(tokeninfo);
         //通过token 得到openId并传入
-        List<SelectOrderDTO> selectOrderDTOS = orderService.getOrderListWX(openId);
+        List<SelectOrderDTO> selectOrderDTOS = orderService.getOrderListWX(openId,selectOrderDTO);
         return BaseRespResult.successResult(selectOrderDTOS);
     }
 
