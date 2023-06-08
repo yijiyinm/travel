@@ -36,4 +36,14 @@ public interface UserMapper extends BaseMapper<UserDO> {
      */
     @Update("update user_wx set fxs_is = 0 where open_id=#{openId}")
     void deleteDistribution(@Param("openId") String openId);
+
+
+    /**
+     * 分销商编码存入
+     * @param id
+     * @param fxsCode
+     * @return
+     */
+    @Update("update user_wx set fxs_code = #{fxsCode},fxs_end_time=date_add(now(), interval {fxsDay} day) where id=#{id}")
+    void setUserfxsCode(@Param("id") String id, @Param("fxsCode") String fxsCode,int fxsDay);
 }

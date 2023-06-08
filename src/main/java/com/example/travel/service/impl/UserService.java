@@ -77,4 +77,6 @@ public interface UserService {
      * @return
      */
     boolean deleteDistribution(String openId);
+
+    boolean setUserfxsCode(String id, String fxsCode);
 }

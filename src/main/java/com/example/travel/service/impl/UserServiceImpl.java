@@ -27,6 +27,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -156,7 +157,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     @Override
     public UserDO getUserInfoByFxsCode(String fxsCode) {
 
-        UserDO one = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getFxsCode, fxsCode));
+        UserDO one = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getFxsCode, fxsCode).eq(UserDO::getFxsIs,true));
         log.info("one {}",JSON.toJSONString(one));
         return one;
     }
@@ -164,6 +165,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     @Override
     public boolean deleteDistribution(String openId) {
         baseMapper.deleteDistribution(openId);
+        return true;
+    }
+
+    @Override
+    public boolean setUserfxsCode(String id, String fxsCode) {
+        UserDO one = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getFxsCode, fxsCode).eq(UserDO::getFxsIs,true));
+        if(Objects.isNull(one)||Objects.isNull(one.getFxsSetDay())){
+            one.setFxsSetDay(0);
+        }
+        baseMapper.setUserfxsCode(id,fxsCode,one.getFxsSetDay());
         return true;
     }
 

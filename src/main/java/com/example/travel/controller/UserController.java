@@ -30,6 +30,14 @@ public class UserController {
     }
 
     /**
+     * 绑定用户分销商
+     * @return
+     */
+    @GetMapping("setUserfxsCode")
+    public BaseRespResult setUserfxsCode(@RequestParam(value = "id") String id,@RequestParam(value = "fxsCode") String fxsCode) {
+        return BaseRespResult.successResult(userService.setUserfxsCode(id,fxsCode));
+    }
+    /**
      * 后台用户登录
      * @return
      */
