@@ -60,9 +60,16 @@ public class UserDO extends Model<UserDO> {
     private Date createDate;
 
     /**
-     * 分销商失效时间
+     * 绑定分销商失效时间
      */
-    private Date fxsEndTime;
+    private Date bindfxsEndTime;
+
+
+
+    /**
+     * 绑定分销商code
+     */
+    private Date bindfxsCode;
 
 
 

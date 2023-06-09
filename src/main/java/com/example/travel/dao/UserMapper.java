@@ -44,6 +44,6 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param fxsCode
      * @return
      */
-    @Update("update user_wx set fxs_code = #{fxsCode},fxs_end_time=date_add(now(), interval {fxsDay} day) where open_id=#{openId}")
+    @Update("update user_wx set bind_fxs_code = #{fxsCode},bind_fxs_end_time=date_add(now(), interval {fxsDay} day) where open_id=#{openId}")
     void setUserfxsCode(@Param("openId") String openId, @Param("fxsCode") String fxsCode,int fxsDay);
 }
