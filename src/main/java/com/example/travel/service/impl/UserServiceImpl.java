@@ -169,13 +169,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     }
 
     @Override
-    public boolean setUserfxsCode(String id, String fxsCode) {
-        UserDO one = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getFxsCode, fxsCode).eq(UserDO::getFxsIs,true));
-        if(Objects.isNull(one)||Objects.isNull(one.getFxsSetDay())){
-            one.setFxsSetDay(0);
+    public boolean setUserfxsCode(String openId, String fxsCode) {
+        try {
+            UserDO one = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getFxsCode, fxsCode).eq(UserDO::getFxsIs,true));
+            if(Objects.isNull(one)||Objects.isNull(one.getFxsSetDay())){
+                one.setFxsSetDay(0);
+            }
+            baseMapper.setUserfxsCode(openId,fxsCode,one.getFxsSetDay());
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        baseMapper.setUserfxsCode(id,fxsCode,one.getFxsSetDay());
-        return true;
+        return false;
+
     }
 
     @Override

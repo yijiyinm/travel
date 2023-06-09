@@ -40,10 +40,10 @@ public interface UserMapper extends BaseMapper<UserDO> {
 
     /**
      * 分销商编码存入
-     * @param id
+     * @param openId
      * @param fxsCode
      * @return
      */
-    @Update("update user_wx set fxs_code = #{fxsCode},fxs_end_time=date_add(now(), interval {fxsDay} day) where id=#{id}")
-    void setUserfxsCode(@Param("id") String id, @Param("fxsCode") String fxsCode,int fxsDay);
+    @Update("update user_wx set fxs_code = #{fxsCode},fxs_end_time=date_add(now(), interval {fxsDay} day) where open_id=#{openId}")
+    void setUserfxsCode(@Param("openId") String openId, @Param("fxsCode") String fxsCode,int fxsDay);
 }

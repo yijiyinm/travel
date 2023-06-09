@@ -1,5 +1,6 @@
 package com.example.travel.controller;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.example.travel.cache.CacheManager;
 import com.example.travel.dto.LoginParam;
 import com.example.travel.param.SelUserListParam;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 /**
  * @author yijiyin
@@ -34,8 +36,13 @@ public class UserController {
      * @return
      */
     @GetMapping("setUserfxsCode")
-    public BaseRespResult setUserfxsCode(@RequestParam(value = "id") String id,@RequestParam(value = "fxsCode") String fxsCode) {
-        return BaseRespResult.successResult(userService.setUserfxsCode(id,fxsCode));
+    public BaseRespResult setUserfxsCode(HttpServletRequest request,@RequestParam(value = "fxsCode") String fxsCode) {
+        String tokeninfo = request.getHeader("tokeninfo");
+//        Map<String,String> map = CommenUtils.decryptUserIdAndTokenByStr(tokeninfo);
+//        String openId = map.get("openId");
+
+        String openId = CacheManager.get(tokeninfo);
+        return BaseRespResult.successResult(userService.setUserfxsCode(openId,fxsCode));
     }
     /**
      * 后台用户登录
