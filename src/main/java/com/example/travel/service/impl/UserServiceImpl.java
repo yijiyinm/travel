@@ -24,10 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 
 /**
@@ -61,6 +58,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             userDTO.setOpenId(userDO.getOpenId());
             userDTO.setPhone(userDO.getPhone());
             userDTO.setCreateDate(userDO.getCreateDate());
+            userDTO.setFxsSetDay(userDO.getFxsSetDay());
             userDTOS.add(userDTO);
         }
         pageDTO.setRecords(userDTOS);
@@ -135,13 +133,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     @Override
     public WxUserDTO getUserInfo(String openId) {
         WxUserDTO wxUserDTO = new WxUserDTO();
+        UserDO userDO = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getOpenId, openId));
+
         // 分销商申请状态
         DistributionDTO dto =  distributionAuditService.getListByOpenId(openId);
         if (dto != null) {
             wxUserDTO.setFxsRequestStatus(dto.getStatus());
             if (OrderStatusEnum.ALREADY_PAY.getStatus().equals(dto.getStatus())){
-                UserDO userDO = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getOpenId, openId).eq(UserDO::getFxsIs,true));
-                if (userDO != null) {
+                if (userDO.getFxsIs() != null && userDO.getFxsIs()) {
                     wxUserDTO.setFxsCode(userDO.getFxsCode());
                 } else {
                     wxUserDTO.setFxsRequestStatus(4);
@@ -151,6 +150,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             wxUserDTO.setFxsRequestStatus(4);
         }
 
+        // 绑定的分销商编码
+        if (userDO.getBindfxsEndTime() != null && userDO.getBindfxsEndTime().after(new Date())) {
+            wxUserDTO.setBindfxsCode(userDO.getBindfxsCode());
+        }
         return wxUserDTO;
     }
 
@@ -165,6 +168,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     @Override
     public boolean deleteDistribution(String openId) {
         baseMapper.deleteDistribution(openId);
+        return true;
+    }
+
+    @Override
+    public boolean updateFxsSetDay(String openId, Integer fxsSetDay) {
+        baseMapper.updateFxsSetDay(openId,fxsSetDay);
         return true;
     }
 

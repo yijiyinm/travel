@@ -29,6 +29,11 @@ public class UserDTO {
     private String fxsCode;
 
     /**
+     * 分销商设置天数时间
+     */
+    private Integer fxsSetDay;
+
+    /**
      * 修改时间
      */
     private Date updateDate;

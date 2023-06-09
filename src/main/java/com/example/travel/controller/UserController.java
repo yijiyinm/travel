@@ -73,6 +73,15 @@ public class UserController {
     }
 
     /**
+     * 编辑绑定分销商的有效天数
+     */
+    @PostMapping("updateFxsSetDay")
+    public BaseRespResult updateFxsSetDay(@RequestBody SelUserListParam param) {
+        userService.updateFxsSetDay(param.getOpenId(),param.getFxsSetDay());
+        return BaseRespResult.successResult("设置成功");
+    }
+
+    /**
      * 小程序用户获取基本信息
      * @return
      */

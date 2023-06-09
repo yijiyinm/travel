@@ -69,7 +69,7 @@ public class UserDO extends Model<UserDO> {
     /**
      * 绑定分销商code
      */
-    private Date bindfxsCode;
+    private String bindfxsCode;
 
 
 

@@ -25,4 +25,9 @@ public class SelUserListParam {
      * 分销商手机号
      */
     private String phone;
+
+    /**
+     * 分销商设置天数时间
+     */
+    private Integer fxsSetDay;
 }

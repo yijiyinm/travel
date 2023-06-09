@@ -78,5 +78,13 @@ public interface UserService {
      */
     boolean deleteDistribution(String openId);
 
+    /**
+     * 编辑绑定分销商设置天数
+     * @param openId 小程序id
+     * @param fxsSetDay 有效天数
+     * @return
+     */
+    boolean updateFxsSetDay(String openId,Integer fxsSetDay);
+
     boolean setUserfxsCode(String id, String fxsCode);
 }
