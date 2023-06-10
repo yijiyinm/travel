@@ -3,9 +3,11 @@ package com.example.travel.scheduled;
 import com.alibaba.fastjson.JSON;
 import com.example.travel.dao.entity.OrderDO;
 import com.example.travel.dto.SelectOrderDTO;
+import com.example.travel.enums.FxsJsEnum;
 import com.example.travel.enums.OrderStatusEnum;
 import com.example.travel.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -53,6 +56,9 @@ public class ScheduledConfig  {
                     if(chuXingDate.compareTo(format)<=0){
                         log.error("订单已经出行chuXingDate  {}", chuXingDate);
                         orderDO.setStatus(OrderStatusEnum.END_PAY.getStatus());
+                        if(StringUtils.isNotEmpty(orderDO.getFxsCode())&& Objects.nonNull(orderDO.getFxsJs())){
+                            orderDO.setFxsJs(FxsJsEnum.wjs.getDex());
+                        }
                         orderDO.updateById();
                     }
                 }

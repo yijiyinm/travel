@@ -217,9 +217,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
                 // 支付成功 通过商户订单号同步状态
                 if (!OrderStatusEnum.ALREADY_PAY.getStatus().equals(orderDO.getStatus())) {
                     orderDO.setStatus(OrderStatusEnum.ALREADY_PAY.getStatus());
-                    if(StringUtils.isNotEmpty(orderDO.getFxsCode())){
-                        orderDO.setFxsJs(FxsJsEnum.wjs.getDex());
-                    }
                 }
             }else{
                 orderDO.setStatus(OrderStatusEnum.FAILURE_PAY.getStatus());
