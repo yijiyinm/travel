@@ -5,6 +5,7 @@ import com.example.travel.dao.entity.UserDO;
 import com.example.travel.dto.UserDTO;
 import com.example.travel.dto.WxUserDTO;
 import com.example.travel.param.SelUserListParam;
+import com.example.travel.util.BaseRespResult;
 
 /**
  * @author yijiyin
@@ -87,4 +88,8 @@ public interface UserService {
     boolean updateFxsSetDay(String openId,Integer fxsSetDay);
 
     boolean setUserfxsCode(String id, String fxsCode);
+
+    BaseRespResult getwxacodeunlimit(String openId);
+
+    WxUserDTO getUserByFxId(Long id);
 }

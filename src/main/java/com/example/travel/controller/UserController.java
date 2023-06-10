@@ -1,6 +1,7 @@
 package com.example.travel.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.example.travel.aop.Authority;
 import com.example.travel.cache.CacheManager;
 import com.example.travel.dto.LoginParam;
 import com.example.travel.param.SelUserListParam;
@@ -15,6 +16,7 @@ import java.util.Objects;
 /**
  * @author yijiyin
  */
+@Authority
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -79,6 +81,28 @@ public class UserController {
     public BaseRespResult updateFxsSetDay(@RequestBody SelUserListParam param) {
         userService.updateFxsSetDay(param.getOpenId(),param.getFxsSetDay());
         return BaseRespResult.successResult("设置成功");
+    }
+
+    /**
+     * 获取二维码
+     */
+    @PostMapping("getwxacodeunlimit")
+    public BaseRespResult getwxacodeunlimit(HttpServletRequest request) {
+        String tokeninfo = request.getHeader("tokeninfo");
+//        Map<String,String> map = CommenUtils.decryptUserIdAndTokenByStr(tokeninfo);
+//        String openId = map.get("openId");
+
+        String openId = CacheManager.get(tokeninfo);
+        return userService.getwxacodeunlimit(openId);
+    }
+
+    /**
+     * 获取分销商信息 by Id
+     */
+    @PostMapping("getFxsUserById")
+    public BaseRespResult getUserByFxId(@RequestBody SelUserListParam param) {
+        ;
+        return BaseRespResult.successResult(userService.getUserByFxId(param.getId()));
     }
 
     /**

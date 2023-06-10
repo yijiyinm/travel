@@ -11,6 +11,12 @@ public class SelUserListParam {
     private Long size;
     private Long current;
 
+
+    /**
+     * 用户id
+     */
+    private Long id;
+
     /**
      * 用户id
      */

@@ -10,5 +10,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Authority {
     // 默认验证
-    AuthorityType authoritytype() default AuthorityType.NOCHECK;
+    AuthorityType authoritytype() default AuthorityType.CHECK_LOGIN;
 }

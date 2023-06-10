@@ -17,13 +17,27 @@ import com.example.travel.enums.OrderStatusEnum;
 import com.example.travel.param.SelUserListParam;
 import com.example.travel.service.DistributionAuditService;
 import com.example.travel.util.AppInfoEnum;
+import com.example.travel.util.BaseRespResult;
 import com.example.travel.util.GenerateCodeUtil;
 import com.example.travel.util.HttpClientUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import sun.misc.BASE64Decoder;
 
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
@@ -34,6 +48,7 @@ import java.util.*;
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements UserService {
     private static final String loginUrl = "https://api.weixin.qq.com/sns/jscode2session";
+
 
     @Resource
     private DistributionAuditService distributionAuditService;
@@ -105,6 +120,102 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     }
 
     @Override
+    public BaseRespResult getwxacodeunlimit(String openId) {
+
+        try {
+            UserDO userDO = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getOpenId, openId));
+            String filePath="/data/fxImg/"+userDO.getId()+".png";
+            File file = new File(filePath);
+            if(file.exists()){
+                return BaseRespResult.successResult(file);
+            }
+
+
+            OutputStream os = new FileOutputStream(file);
+
+            HashMap map = new HashMap(4);
+            map.put("appid",AppInfoEnum.APP_ID.getValue());
+            map.put("secret", AppInfoEnum.APP_SECRET.getValue());
+            map.put("grant_type","client_credential");
+            String tokenReturnString = HttpClientUtil.doGet("https://api.weixin.qq.com/cgi-bin/token",map);
+            log.info("token返回数据：{}",tokenReturnString);
+            JSONObject jsonObject = JSON.parseObject(tokenReturnString);
+            String access_token = (String) jsonObject.get("access_token");
+
+
+
+            //调用微信接口生成二维码
+            URL url = new URL("https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token="  + access_token);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.setRequestMethod("POST");// 提交模式
+            // 发送POST请求必须设置如下两行
+            httpURLConnection.setDoOutput(true);
+            httpURLConnection.setDoInput(true);
+            // 获取URLConnection对象对应的输出流
+            PrintWriter printWriter = new PrintWriter(httpURLConnection.getOutputStream());
+            // 发送请求参数
+            JSONObject paramJson = new JSONObject();
+            //这就是你二维码里携带的参数 String型  名称不可变
+            paramJson.put("scene", "id="+userDO.getId());
+            //这是设置扫描二维码后跳转的页面
+            paramJson.put("width", 430);
+            printWriter.write(paramJson.toString());
+            // flush输出流的缓冲
+            printWriter.flush();
+
+            //开始获取数据
+            BufferedInputStream bis = new BufferedInputStream(httpURLConnection.getInputStream());
+            int len;
+            byte[] arr = new byte[1024];
+            while ((len = bis.read(arr)) != -1) {
+                os.write(arr, 0, len);
+                os.flush();
+            }
+            os.close();
+            bis.close();
+            log.info("生成二维码成功,{}", filePath);
+
+
+
+
+
+            return BaseRespResult.successResult(openId+".png");
+            // 返回给前端
+        }catch (Exception e){
+            e.printStackTrace();
+
+        }
+        return BaseRespResult.errorResult("二维码分享失败");
+    }
+
+    @Override
+    public WxUserDTO getUserByFxId(Long id) {
+        WxUserDTO wxUserDTO = new WxUserDTO();
+        UserDO userDO = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getId, id));
+
+        // 分销商申请状态
+        DistributionDTO dto =  distributionAuditService.getListByOpenId(userDO.getOpenId());
+        if (dto != null) {
+            wxUserDTO.setFxsRequestStatus(dto.getStatus());
+            if (OrderStatusEnum.ALREADY_PAY.getStatus().equals(dto.getStatus())){
+                if (userDO.getFxsIs() != null && userDO.getFxsIs()) {
+                    wxUserDTO.setFxsCode(userDO.getFxsCode());
+                } else {
+                    wxUserDTO.setFxsRequestStatus(4);
+                }
+            }
+        } else {
+            wxUserDTO.setFxsRequestStatus(4);
+        }
+
+        // 绑定的分销商编码
+        if (userDO.getBindFxsEndTime() != null && userDO.getBindFxsEndTime().after(new Date())) {
+            wxUserDTO.setBindfxsCode(userDO.getBindFxsCode());
+        }
+        return wxUserDTO;
+    }
+
+    @Override
     public String login(String userName, String userPassword) {
         log.info("登录信息：{}",userName);
         // 验证后台用户名密码 返回token
@@ -151,8 +262,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         }
 
         // 绑定的分销商编码
-        if (userDO.getBindfxsEndTime() != null && userDO.getBindfxsEndTime().after(new Date())) {
-            wxUserDTO.setBindfxsCode(userDO.getBindfxsCode());
+        if (userDO.getBindFxsEndTime() != null && userDO.getBindFxsEndTime().after(new Date())) {
+            wxUserDTO.setBindfxsCode(userDO.getBindFxsCode());
         }
         return wxUserDTO;
     }

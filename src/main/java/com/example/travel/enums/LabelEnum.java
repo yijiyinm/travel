@@ -6,11 +6,8 @@ package com.example.travel.enums;
  * @Date 2023/5/7 21:59
  */
 public enum LabelEnum {
-    zby(1,"周边游"),
-    pc(2,"拼车"),
-    sjt(3,"私家团"),
-    mstj(4,"美食推荐"),
-    zjgl(5,"自家攻略"),
+    zby(1,"周边拼团游"),
+    pc(2,"包车/拼车"),
     ;
 
     private final Integer dex;

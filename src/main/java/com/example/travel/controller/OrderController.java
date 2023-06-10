@@ -8,6 +8,7 @@ import com.example.travel.dto.SelectOrderDTO;
 import com.example.travel.dto.TouristDTO;
 import com.example.travel.dto.CreateOrderDTO;
 import com.example.travel.dto.CreateOrderReturnDTO;
+import com.example.travel.enums.FxsJsEnum;
 import com.example.travel.param.SelOrderListParam;
 import com.example.travel.service.OrderService;
 import com.example.travel.service.TouristService;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,6 +73,7 @@ public class OrderController {
         return BaseRespResult.successResult(orderService.getOrderList(param));
     }
 
+
     /**
      * 手动操作退款
      * @return
@@ -82,6 +85,33 @@ public class OrderController {
             return BaseRespResult.successResult("申请退款成功");
         }
         return BaseRespResult.errorResult("申请退款失败");
+    }
+
+    /**
+     * 结算订单
+     * @return
+     */
+    @PostMapping("fsxJsByOrderCode")
+    public BaseRespResult fsxJsByOrderCode(@RequestBody SelOrderListParam param) {
+        Boolean ret = orderService.fsxJsByOrderCode(param.getOrderCode());
+        if (ret){
+            return BaseRespResult.successResult("结算成功");
+        }
+        return BaseRespResult.errorResult("结算失败");
+    }
+
+    /**
+     * 获取结算枚举
+     * @return
+     */
+    @Authority(authoritytype = AuthorityType.NOCHECK)
+    @GetMapping("getFsxJsEnum")
+    public BaseRespResult getFsxJsEnum() {
+        HashMap<Integer, String> objectObjectHashMap = new HashMap<>();
+        for (FxsJsEnum fxsJsEnum: FxsJsEnum.values()){
+            objectObjectHashMap.put(fxsJsEnum.getDex(), fxsJsEnum.getName());
+        }
+        return BaseRespResult.successResult(objectObjectHashMap);
     }
 
     /**
@@ -109,6 +139,9 @@ public class OrderController {
         List<SelectOrderDTO> selectOrderDTOS = orderService.getFxsOrderListWX(param.getFxsCode());
         return BaseRespResult.successResult(selectOrderDTOS);
     }
+
+
+
 
     /**
      * 小程序获取订单详情

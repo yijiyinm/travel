@@ -98,4 +98,18 @@ public class SelectOrderDTO {
      * 退款单号
      */
     private String returnCode;
+
+
+
+    /**
+     * 结算
+     */
+    private Integer fxsJs;
+
+
+
+    /**
+     * 结算
+     */
+    private String fxsJsName;
 }

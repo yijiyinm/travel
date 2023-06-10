@@ -13,6 +13,7 @@ import com.example.travel.dto.CreateOrderReturnDTO;
 import com.example.travel.dto.SelectOrderDTO;
 import com.example.travel.dto.TouristDTO;
 import com.example.travel.dao.entity.OrderDO;
+import com.example.travel.enums.FxsJsEnum;
 import com.example.travel.enums.OrderStatusEnum;
 import com.example.travel.param.SelOrderListParam;
 import com.example.travel.service.OrderService;
@@ -131,6 +132,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             orderDO.setOutTradeNo(outTradeNo);
             orderDO.setPrePayId(paymentResponse.getPackageVal());
             orderDO.setChuXingDate(param.getChuXingDate());
+            orderDO.setFxsJs(FxsJsEnum.wjs.getDex());
             //orderDO.setPrePayId("cspayId");
             String touristIds = "";
             for (int i=0;i<param.getTouristIds().size(); i++) {
@@ -316,6 +318,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
                 selectOrderDTO.setOrderCode(orderDO.getOrderCode());
                 selectOrderDTO.setNum(orderDO.getNum());
                 selectOrderDTO.setCreateDate(orderDO.getCreateDate());
+                selectOrderDTO.setFxsJs(orderDO.getFxsJs());
+                selectOrderDTO.setFxsJsName(FxsJsEnum.getNameByCode(orderDO.getFxsJs()));
                 // 产品信息
                 AddProductDTO addProductDTO = productService.getProductDetail(orderDO.getProductCode());
                 selectOrderDTO.setMainUrl(addProductDTO.getMainUrl());
@@ -387,6 +391,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
                 selectOrderDTO.setRefundAmount(orderDO.getRefundAmount());
                 selectOrderDTO.setReturnCode(orderDO.getReturnCode());
                 selectOrderDTO.setThisRefundAmount(orderDO.getThisRefundAmount());
+
+                selectOrderDTO.setFxsJs(orderDO.getFxsJs());
+                selectOrderDTO.setFxsJsName(FxsJsEnum.getNameByCode(orderDO.getFxsJs()));
                 selectOrderDTOS.add(selectOrderDTO);
             }
             dtoPage.setRecords(selectOrderDTOS);
@@ -411,6 +418,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             selectOrderDTO.setReturnCode(orderDO.getReturnCode());
             selectOrderDTO.setThisRefundAmount(orderDO.getThisRefundAmount());
             selectOrderDTO.setOrderCode(orderDO.getOrderCode());
+
+            selectOrderDTO.setFxsJs(orderDO.getFxsJs());
+            selectOrderDTO.setFxsJsName(FxsJsEnum.getNameByCode(orderDO.getFxsJs()));
             // 产品信息
             AddProductDTO addProductDTO = productService.getProductDetail(orderDO.getProductCode());
             selectOrderDTO.setProductInfo(addProductDTO);
@@ -517,6 +527,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             log.error("getAllOrder");
         }
         return Lists.newArrayList();
+    }
+
+    @Override
+    public Boolean fsxJsByOrderCode(String orderCode) {
+        OrderDO orderDO = getOne(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getOrderCode, orderCode));
+        orderDO.setFxsJs(FxsJsEnum.yjs.getDex());
+        orderDO.updateById();
+        return true;
     }
 
     /**

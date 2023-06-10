@@ -62,14 +62,14 @@ public class UserDO extends Model<UserDO> {
     /**
      * 绑定分销商失效时间
      */
-    private Date bindfxsEndTime;
+    private Date bindFxsEndTime;
 
 
 
     /**
      * 绑定分销商code
      */
-    private String bindfxsCode;
+    private String bindFxsCode;
 
 
 

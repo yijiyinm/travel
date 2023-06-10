@@ -117,4 +117,13 @@ public class OrderDO extends Model<OrderDO> {
     private Date createDate;
 
 
+
+
+
+
+    /**
+     * 结算
+     */
+    private Integer fxsJs;
+
 }

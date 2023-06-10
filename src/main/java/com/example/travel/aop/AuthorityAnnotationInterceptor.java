@@ -64,7 +64,7 @@ public class AuthorityAnnotationInterceptor implements HandlerInterceptor {
                     response.setCharacterEncoding("UTF-8");
                         response.setContentType("application/json; charset=utf-8");
 
-                        if (authority != null){
+                        if (authority != null&& authority.authoritytype()== AuthorityType.CHECK_LOGIN){
                             log.info("进入：{}",authority);
                             // 验证登录
                             String tokeninfo = request.getHeader("tokeninfo");

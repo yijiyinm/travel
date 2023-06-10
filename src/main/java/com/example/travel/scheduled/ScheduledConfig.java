@@ -29,7 +29,7 @@ public class ScheduledConfig  {
     @Autowired
     private OrderService orderService;
     @Scheduled(cron = "*/15 * * * * ?")
-    public void execute() {
+    public void order() {
         log.info("订单定时任务开始");
         SelectOrderDTO selectOrderDTO = new SelectOrderDTO();
         selectOrderDTO.setOrderStatus(OrderStatusEnum.WAIT_PAY.getStatus());

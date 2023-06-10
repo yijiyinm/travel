@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.travel.aop.Authority;
 import com.example.travel.aop.AuthorityType;
 import com.example.travel.dto.AddProductDTO;
+import com.example.travel.enums.LabelEnum;
 import com.example.travel.service.ProductService;
 import com.example.travel.util.BaseRespResult;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -116,7 +119,19 @@ public class ProductController {
 
 
 
+    /**
+     * 小程序查询商品分类
+     */
+    @Authority(authoritytype = AuthorityType.NOCHECK)
+    @GetMapping("getLabelEnumAll")
+    public BaseRespResult getLabelEnumAll() {
+        HashMap<Integer, String> objectObjectHashMap = new HashMap<>();
+        for (LabelEnum labelEnum:LabelEnum.values()){
+            objectObjectHashMap.put(labelEnum.getDex(), labelEnum.getName());
+        }
 
+        return BaseRespResult.successResult(objectObjectHashMap);
+    }
 
     /**
      * 小程序查询商品所有table栏
