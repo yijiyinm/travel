@@ -25,4 +25,13 @@ public enum LabelEnum {
     public String getName() {
         return name;
     }
-}
+
+    public static String getNameByCode(String code){
+        for (LabelEnum l :LabelEnum.values()){
+            if(l.dex.equals(code)){
+                return l.name;
+            }
+        }
+        return null;
+
+    }}

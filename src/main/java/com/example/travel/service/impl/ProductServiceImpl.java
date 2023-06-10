@@ -205,6 +205,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
                 addProductDTO1.setProductCode(productDO.getProductCode());
                 addProductDTO1.setStatus(productDO.getStatus());
                 addProductDTO1.setLabel(productDO.getLabel());
+                addProductDTO1.setLabelName(LabelEnum.getNameByCode(productDO.getLabel()));
                 addProductDTO1.setSequence(productDO.getSequence());
                 addProductDTO1.setMonthSalesNum(productDO.getMonthSalesNum());
                 addProductDTOS.add(addProductDTO1);
@@ -228,6 +229,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
         addProductDTO.setProductName(productDO.getProductName());
         addProductDTO.setProductCode(productDO.getProductCode());
         addProductDTO.setLabel(productDO.getLabel());
+        addProductDTO.setLabelName(LabelEnum.getNameByCode(productDO.getLabel()));
+
         addProductDTO.setSequence(productDO.getSequence());
         addProductDTO.setMainUrl(productDO.getMainUrl());
         addProductDTO.setStatus(productDO.getStatus());
@@ -297,6 +300,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             addProductDTO.setProductName(productDO.getProductName());
             addProductDTO.setProductCode(productDO.getProductCode());
             addProductDTO.setLabel(productDO.getLabel());
+            addProductDTO.setLabelName(LabelEnum.getNameByCode(productDO.getLabel()));
+
             addProductDTO.setMainUrl(productDO.getMainUrl());
             addProductDTO.setSequence(productDO.getSequence());
             addProductDTO.setMonthSalesNum(productDO.getMonthSalesNum());
@@ -330,6 +335,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, ProductDO> im
             addProductDTO.setProductName(productDO.getProductName());
             addProductDTO.setProductCode(productDO.getProductCode());
             addProductDTO.setLabel(productDO.getLabel());
+            addProductDTO.setLabelName(LabelEnum.getNameByCode(productDO.getLabel()));
+
             addProductDTO.setMainUrl(productDO.getMainUrl());
             addProductDTO.setSequence(productDO.getSequence());
             // 价格信息

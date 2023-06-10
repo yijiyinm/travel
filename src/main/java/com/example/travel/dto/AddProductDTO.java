@@ -59,6 +59,12 @@ public class AddProductDTO {
      */
     private String label;
 
+
+    /**
+     * 标签
+     */
+    private String labelName;
+
     /**
      * 展示顺序
      */
