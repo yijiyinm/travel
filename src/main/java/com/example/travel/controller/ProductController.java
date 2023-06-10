@@ -125,7 +125,7 @@ public class ProductController {
     @Authority(authoritytype = AuthorityType.NOCHECK)
     @GetMapping("getLabelEnumAll")
     public BaseRespResult getLabelEnumAll() {
-        HashMap<Integer, String> objectObjectHashMap = new HashMap<>();
+        HashMap<String, String> objectObjectHashMap = new HashMap<>();
         for (LabelEnum labelEnum:LabelEnum.values()){
             objectObjectHashMap.put(labelEnum.getDex(), labelEnum.getName());
         }
