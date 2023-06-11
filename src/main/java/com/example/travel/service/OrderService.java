@@ -101,5 +101,5 @@ public interface OrderService {
     List<OrderDO> getAllOrder(SelectOrderDTO selectOrderDTO);
 
 
-    Boolean fsxJsByOrderCode(String orderCode);
+    Boolean fsxJsByOrderCode(String orderCodes);
 }

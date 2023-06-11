@@ -54,4 +54,10 @@ public class SelOrderListParam {
      * 创建时间月份
      */
     private String month;
+
+
+    /**
+     * 订单编码List
+     */
+    private String orderCodes;
 }

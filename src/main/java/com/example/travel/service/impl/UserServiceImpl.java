@@ -127,7 +127,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             String filePath="/data/fxImg/"+userDO.getId()+".png";
             File file = new File(filePath);
             if(file.exists()){
-                return BaseRespResult.successResult(file);
+                return BaseRespResult.successResult(userDO.getId()+".png");
             }
 
 
@@ -179,7 +179,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
 
 
-            return BaseRespResult.successResult(openId+".png");
+            return BaseRespResult.successResult(userDO.getId()+".png");
             // 返回给前端
         }catch (Exception e){
             e.printStackTrace();

@@ -93,7 +93,7 @@ public class OrderController {
      */
     @PostMapping("fsxJsByOrderCode")
     public BaseRespResult fsxJsByOrderCode(@RequestBody SelOrderListParam param) {
-        Boolean ret = orderService.fsxJsByOrderCode(param.getOrderCode());
+        Boolean ret = orderService.fsxJsByOrderCode(param.getOrderCodes());
         if (ret){
             return BaseRespResult.successResult("结算成功");
         }

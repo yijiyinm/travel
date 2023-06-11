@@ -529,10 +529,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
     }
 
     @Override
-    public Boolean fsxJsByOrderCode(String orderCode) {
-        OrderDO orderDO = getOne(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getOrderCode, orderCode));
-        orderDO.setFxsJs(FxsJsEnum.yjs.getDex());
-        orderDO.updateById();
+    public Boolean fsxJsByOrderCode(String orderCodes) {
+        List<String> list = Arrays.asList(orderCodes.split(","));
+        for (String orderCode:list){
+            OrderDO orderDO = getOne(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getOrderCode, orderCode));
+            orderDO.setFxsJs(FxsJsEnum.yjs.getDex());
+            orderDO.updateById();
+        }
+
+
         return true;
     }
 
