@@ -8,10 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.travel.dao.OrderMapper;
 import com.example.travel.dao.entity.ProductPriceDO;
 import com.example.travel.dao.entity.UserDO;
-import com.example.travel.dto.CreateOrderDTO;
-import com.example.travel.dto.CreateOrderReturnDTO;
-import com.example.travel.dto.SelectOrderDTO;
-import com.example.travel.dto.TouristDTO;
+import com.example.travel.dto.*;
 import com.example.travel.dao.entity.OrderDO;
 import com.example.travel.enums.FxsJsEnum;
 import com.example.travel.enums.OrderStatusEnum;
@@ -19,7 +16,6 @@ import com.example.travel.param.SelOrderListParam;
 import com.example.travel.service.OrderService;
 import com.example.travel.service.ProductPriceService;
 import com.example.travel.service.TouristService;
-import com.example.travel.dto.AddProductDTO;
 import com.example.travel.service.ProductService;
 import com.example.travel.util.AppInfoEnum;
 import com.example.travel.util.GenerateCodeUtil;
@@ -143,10 +139,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
             }
             orderDO.setTouristIds(touristIds);
             orderDO.setOpenId(openId);
-            orderDO.setFxsCode(param.getFxsCode());
-            if (StringUtils.isNotEmpty(param.getFxsCode())) {
+            WxUserDTO wxUserDTO = userService.getUserInfo(openId);
+
+            if (StringUtils.isNotEmpty(wxUserDTO.getBindfxsCode())) {
+                orderDO.setFxsCode(wxUserDTO.getBindfxsCode());
+                orderDO.setDistributionIs(Boolean.TRUE);
+
                 // 查询分销商手机号
-                UserDO userDO = userService.getUserInfoByFxsCode(param.getFxsCode());
+                UserDO userDO = userService.getUserInfoByFxsCode(wxUserDTO.getBindfxsCode());
                 if (userDO != null){
                     orderDO.setFxsPhone(userDO.getPhone());
                 }
@@ -352,6 +352,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
                     .eq(StringUtils.isNotEmpty(param.getFxsCode()),OrderDO::getFxsCode,param.getFxsCode())
                     .eq(StringUtils.isNotEmpty(param.getFxsPhone()),OrderDO::getFxsPhone,param.getFxsPhone())
                     .eq(param.getOrderStatus()!=null,OrderDO::getStatus,param.getOrderStatus())
+                    .eq(param.getFxsJs()!=null,OrderDO::getFxsJs,param.getFxsJs())
                     .eq(StringUtils.isNotEmpty(param.getOrderCode()),OrderDO::getOrderCode,param.getOrderCode()).orderByDesc(OrderDO::getCreateDate);
             if (StringUtils.isNotEmpty(param.getMonth())) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -533,8 +534,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,OrderDO> implement
         List<String> list = Arrays.asList(orderCodes.split(","));
         for (String orderCode:list){
             OrderDO orderDO = getOne(Wrappers.<OrderDO>lambdaQuery().eq(OrderDO::getOrderCode, orderCode));
-            orderDO.setFxsJs(FxsJsEnum.yjs.getDex());
-            orderDO.updateById();
+            if(orderDO.getFxsJs().equals(2)){
+                orderDO.setFxsJs(FxsJsEnum.yjs.getDex());
+                orderDO.updateById();
+            }
         }
 
 

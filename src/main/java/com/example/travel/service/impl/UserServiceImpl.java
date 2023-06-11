@@ -291,10 +291,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     @Override
     public boolean setUserfxsCode(String openId, String fxsCode) {
         try {
+            log.info("setUserfxsCode {},{}",openId,fxsCode);
             UserDO one = getOne(Wrappers.<UserDO>lambdaQuery().eq(UserDO::getFxsCode, fxsCode).eq(UserDO::getFxsIs,true));
             if(Objects.isNull(one)||Objects.isNull(one.getFxsSetDay())){
                 one.setFxsSetDay(0);
             }
+            log.info("setUserfxsCode UserDO {}",JSON.toJSONString(one));
             baseMapper.setUserfxsCode(openId,fxsCode,one.getFxsSetDay());
             return true;
         }catch (Exception e){

@@ -60,4 +60,10 @@ public class SelOrderListParam {
      * 订单编码List
      */
     private String orderCodes;
+
+
+    /**
+     * 结算
+     */
+    private Integer fxsJs;
 }
