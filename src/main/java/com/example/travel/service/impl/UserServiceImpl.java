@@ -60,7 +60,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         Page<UserDO> page = new Page(param.getCurrent(),param.getSize());
         LambdaQueryWrapper<UserDO> wrapper = Wrappers.<UserDO>lambdaQuery()
                 .like(StringUtils.isNotEmpty(param.getPhone()),UserDO::getPhone,param.getPhone())
-                .eq(param.getDistributionIs() != null,UserDO::getFxsIs,param.getDistributionIs());
+                .eq(param.getDistributionIs() != null,UserDO::getFxsIs,param.getDistributionIs()).orderByDesc(UserDO::getCreateDate);
 
         Page<UserDO> doPage = page(page,wrapper);
         log.info("用户总数：{}",doPage.getTotal());
